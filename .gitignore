@@ -42,3 +42,6 @@ next-env.d.ts
 
 # workspaces settings
 /.vscode/
+
+# copilot settings
+/.github/instructions/
