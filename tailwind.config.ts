@@ -47,14 +47,14 @@ const config: Config = {
       },
       width: {
         sidebar: '16rem',
-        'sidebar-collapsed': '4rem',
+        'sidebar-collapsed': '4.125rem',
       },
       height: {
         header: '3.5rem',
       },
       spacing: {
         sidebar: '16rem',
-        'sidebar-collapsed': '4rem',
+        'sidebar-collapsed': '4.125rem',
         header: '3.5rem',
       },
       // Common icon sizes

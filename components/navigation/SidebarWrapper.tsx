@@ -13,7 +13,7 @@ export function SidebarWrapper({ children }: SidebarWrapperProps) {
   const isExpanded = useSidebarStore((state) => state.isExpanded)
   const isMobile = useMobileStore((state) => state.isMobile)
 
-  const sidebarWidth = isExpanded ? 'w-64' : 'w-16.5'
+  const sidebarWidth = isExpanded ? 'w-sidebar' : 'w-sidebar-collapsed'
   const mobileTransform = isExpanded ? 'translate-x-0' : '-translate-x-full'
 
   return (
