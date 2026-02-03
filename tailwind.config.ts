@@ -9,22 +9,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+        // Surface colors
+        surface: {
+          primary: 'var(--color-white)',
+          'primary-dark': 'var(--color-neutral-950)',
         },
-        sidebar: {
-          bg: 'var(--color-white)',
-          border: 'var(--color-neutral-200)',
+        // Border colors
+        border: {
+          DEFAULT: 'var(--color-neutral-200)',
+          dark: 'var(--color-neutral-800)',
+        },
+        // Interactive element colors
+        interactive: {
+          // Default state
+          bg: 'transparent',
+          'bg-hover': 'var(--color-neutral-100)',
+          'bg-active': 'var(--color-neutral-200)',
+          'bg-hover-dark': 'var(--color-neutral-800)',
+          'bg-active-dark': 'var(--color-neutral-800)',
+          // Text colors
+          text: 'var(--color-neutral-600)',
+          'text-hover': 'var(--color-neutral-900)',
+          'text-active': 'var(--color-neutral-900)',
+          'text-dark': 'var(--color-neutral-400)',
+          'text-hover-dark': 'var(--color-neutral-100)',
+          'text-active-dark': 'var(--color-neutral-100)',
+        },
+        // Text colors
+        content: {
+          primary: 'var(--color-neutral-900)',
+          'primary-dark': 'var(--color-neutral-100)',
+          secondary: 'var(--color-neutral-600)',
+          'secondary-dark': 'var(--color-neutral-400)',
+          muted: 'var(--color-neutral-200)',
+          'muted-dark': 'var(--color-neutral-800)',
         },
       },
       width: {
@@ -38,6 +56,21 @@ const config: Config = {
         sidebar: '16rem',
         'sidebar-collapsed': '4rem',
         header: '3.5rem',
+      },
+      // Common icon sizes
+      size: {
+        'icon-sm': '1rem',
+        icon: '1.25rem',
+        'icon-lg': '1.5rem',
+        'icon-btn': '2.5rem',
+      },
+      // Common border radius
+      borderRadius: {
+        button: '0.5rem',
+      },
+      // Common transitions
+      transitionDuration: {
+        DEFAULT: '300ms',
       },
     },
   },

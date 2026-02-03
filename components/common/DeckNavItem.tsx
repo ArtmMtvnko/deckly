@@ -26,18 +26,18 @@ export function DeckNavItem({
       href={href}
       onClick={onClick}
       className={twMerge(
-        'flex h-10 items-center overflow-hidden rounded-lg transition-all duration-300',
+        'h-icon-btn rounded-button flex items-center overflow-hidden transition-all',
         isActive
-          ? 'bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
-          : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+          ? 'bg-interactive-bg-active text-interactive-text-active dark:bg-interactive-bg-active-dark dark:text-interactive-text-active-dark'
+          : 'text-interactive-text hover:bg-interactive-bg-hover hover:text-interactive-text-hover dark:text-interactive-text-dark dark:hover:bg-interactive-bg-hover-dark dark:hover:text-interactive-text-hover-dark'
       )}
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-        <Layers className="h-4 w-4" />
+      <div className="size-icon-btn flex shrink-0 items-center justify-center">
+        <Layers className="size-icon-sm" />
       </div>
       <span
         className={twMerge(
-          'truncate pr-3 whitespace-nowrap transition-all duration-300',
+          'truncate pr-3 whitespace-nowrap transition-all',
           isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'
         )}
       >

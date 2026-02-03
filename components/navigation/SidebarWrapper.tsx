@@ -19,7 +19,7 @@ export function SidebarWrapper({ children }: SidebarWrapperProps) {
   return (
     <aside
       className={twMerge(
-        `fixed top-0 left-0 z-50 flex h-full flex-col border-r border-neutral-200 bg-white transition-all duration-300 ease-in-out dark:border-neutral-800 dark:bg-neutral-950`,
+        `border-border bg-surface-primary dark:border-border-dark dark:bg-surface-primary-dark fixed top-0 left-0 z-50 flex h-full flex-col border-r transition-all duration-300 ease-in-out`,
         isMobile ? `w-full ${mobileTransform}` : sidebarWidth
       )}
     >

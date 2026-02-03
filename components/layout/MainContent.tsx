@@ -15,8 +15,12 @@ export function MainContent({ children }: MainContentProps) {
 
   // On mobile, main content takes full width with top padding for header
   // On desktop, main content is offset by sidebar width
-  const marginLeft = isMobile ? 'ml-0' : isExpanded ? 'ml-64' : 'ml-16'
-  const paddingTop = isMobile ? 'pt-14' : 'pt-0'
+  const marginLeft = isMobile
+    ? 'ml-0'
+    : isExpanded
+      ? 'ml-sidebar'
+      : 'ml-sidebar-collapsed'
+  const paddingTop = isMobile ? 'pt-header' : 'pt-0'
 
   return (
     <main
