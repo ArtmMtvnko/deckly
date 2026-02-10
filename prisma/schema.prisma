@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  createdAt DateTime @default(now())
+
+  createdDecks Deck[]
+  decks        UserDeck[]
+  srsStates    SRSState[]
+}
+
+model Deck {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator    User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  users      UserDeck[]
+  flashcards Flashcard[]
+  publicDeck PublicDeck?
+}
+
+model UserDeck {
+  userId  String
+  deckId  String
+  addedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@id([userId, deckId])
+}
+
+model PublicDeck {
+  deckId      String   @id
+  rating      Float?
+  downloads   Int      @default(0)
+  publishedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+}
+
+model Flashcard {
+  id        String   @id @default(uuid())
+  position  Int
+  deckId    String
+  createdAt DateTime @default(now())
+
+  frontsideText  String
+  frontsideImage String?
+  backsideText   String
+  backsideImage  String?
+
+  deck      Deck       @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  srsStates SRSState[]
+}
+
+model SRSState {
+  userId      String
+  flashcardId String
+
+  repetitions  Int       @default(0)
+  intervalDays Int       @default(0)
+  easeFactor   Float     @default(2.5)
+  nextReview   DateTime
+  lastReviewed DateTime?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcard Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+
+  @@id([userId, flashcardId])
+}
