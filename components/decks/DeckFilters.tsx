@@ -1,36 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 
 const FILTERS = [
-  { key: 'your', label: 'Your decks' },
-  { key: 'public', label: 'Public decks' },
-  { key: 'copied', label: 'Copied decks' },
-  { key: 'published', label: 'Published decks' },
+  { href: '/decks-library/your-decks', label: 'Your decks' },
+  { href: '/decks-library/public-decks', label: 'Public decks' },
+  { href: '/decks-library/copied-decks', label: 'Copied decks' },
+  { href: '/decks-library/published-decks', label: 'Published decks' },
 ] as const
 
-type FilterKey = (typeof FILTERS)[number]['key']
-
 export function DeckFilters() {
-  const [activeFilter, setActiveFilter] = useState<FilterKey>('your')
+  const pathname = usePathname()
 
   return (
-    <div className="flex gap-2">
-      {FILTERS.map((filter) => (
-        <button
-          key={filter.key}
-          onClick={() => setActiveFilter(filter.key)}
-          className={twMerge(
-            'rounded-button cursor-pointer border px-4 py-2 text-sm font-medium transition-colors',
-            activeFilter === filter.key
-              ? 'border-content-primary bg-content-primary text-surface-primary dark:border-content-primary-dark dark:bg-content-primary-dark dark:text-surface-primary-dark'
-              : 'border-border text-content-secondary hover:border-content-primary hover:text-content-primary dark:border-border-dark dark:text-content-secondary-dark dark:hover:border-content-primary-dark dark:hover:text-content-primary-dark'
-          )}
-        >
-          {filter.label}
-        </button>
-      ))}
-    </div>
+    <nav className="flex gap-2">
+      {FILTERS.map((filter) => {
+        const isActive = pathname === filter.href
+
+        return (
+          <Link
+            key={filter.href}
+            href={filter.href}
+            className={twMerge(
+              'rounded-button border px-4 py-2 text-sm font-medium transition-colors',
+              isActive
+                ? 'border-content-primary bg-content-primary text-surface-primary dark:border-content-primary-dark dark:bg-content-primary-dark dark:text-surface-primary-dark'
+                : 'border-border text-content-secondary hover:border-content-primary hover:text-content-primary dark:border-border-dark dark:text-content-secondary-dark dark:hover:border-content-primary-dark dark:hover:text-content-primary-dark'
+            )}
+          >
+            {filter.label}
+          </Link>
+        )
+      })}
+    </nav>
   )
 }

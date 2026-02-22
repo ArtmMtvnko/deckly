@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 
-import { DeckFilters } from '@/components/decks/DeckFilters'
 import { DeckSearchBar } from '@/components/decks/DeckSearchBar'
 import { DeckCard } from '@/components/decks/DeckCard'
 
@@ -16,15 +15,9 @@ const MOCK_DECKS = [
   { id: '3', name: 'Deck 3' },
 ]
 
-export default function DecksPage() {
+export default function YourDecksPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-6">
-      <h1 className="text-content-primary dark:text-content-primary-dark text-3xl font-bold">
-        Your decks library
-      </h1>
-
-      <DeckFilters />
-
+    <>
       <div className="flex items-center gap-3">
         <DeckSearchBar />
         <Link
@@ -46,6 +39,6 @@ export default function DecksPage() {
           />
         ))}
       </div>
-    </div>
+    </>
   )
 }

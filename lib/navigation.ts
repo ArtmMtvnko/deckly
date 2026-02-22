@@ -33,7 +33,7 @@ export const mainNavItems: NavItem[] = [
 
 export const decksNavItem: NavItem = {
   label: 'Decks',
-  href: '/decks',
+  href: '/decks-library',
   icon: Layers,
 }
 
