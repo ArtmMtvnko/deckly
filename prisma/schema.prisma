@@ -60,7 +60,6 @@ model PublicDeck {
 
 model Flashcard {
   id        String   @id @default(uuid())
-  position  Int
   deckId    String
   createdAt DateTime @default(now())
 

@@ -4,8 +4,10 @@ interface FlashcardEditorProps {
   index: number
   frontsideText: string
   backsideText: string
+  hint: string
   onFrontsideChange: (value: string) => void
   onBacksideChange: (value: string) => void
+  onHintChange: (value: string) => void
   onDelete: () => void
   onGenerateAI: () => void
 }
@@ -14,8 +16,10 @@ export function FlashcardEditor({
   index,
   frontsideText,
   backsideText,
+  hint,
   onFrontsideChange,
   onBacksideChange,
+  onHintChange,
   onDelete,
   onGenerateAI,
 }: FlashcardEditorProps) {
@@ -61,6 +65,24 @@ export function FlashcardEditor({
           value={backsideText}
           placeholder="Back side text"
           onChange={onBacksideChange}
+        />
+      </div>
+
+      {/* Hint */}
+      <div className="mt-3">
+        <label
+          htmlFor={`hint-${index}`}
+          className="text-content-secondary dark:text-content-secondary-dark mb-1 block text-xs font-medium"
+        >
+          Hint (optional)
+        </label>
+        <input
+          id={`hint-${index}`}
+          type="text"
+          value={hint}
+          onChange={(e) => onHintChange(e.target.value)}
+          placeholder="Add a hint to help recall this card"
+          className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full border bg-transparent p-2 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
         />
       </div>
     </div>

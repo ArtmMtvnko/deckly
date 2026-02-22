@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Sparkles } from 'lucide-react'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
@@ -11,18 +12,27 @@ interface FlashcardDraft {
   id: string
   frontsideText: string
   backsideText: string
+  hint: string
 }
 
 function createEmptyFlashcard(): FlashcardDraft {
-  return { id: crypto.randomUUID(), frontsideText: '', backsideText: '' }
+  return {
+    id: crypto.randomUUID(),
+    frontsideText: '',
+    backsideText: '',
+    hint: '',
+  }
 }
 
 export function NewDeckForm() {
+  const router = useRouter()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [flashcards, setFlashcards] = useState<FlashcardDraft[]>([
     createEmptyFlashcard(),
   ])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const addFlashcard = useCallback(() => {
     setFlashcards((prev) => [...prev, createEmptyFlashcard()])
@@ -44,9 +54,59 @@ export function NewDeckForm() {
     )
   }, [])
 
-  const handleDone = useCallback(() => {
-    // TODO: persist to backend
+  const updateHint = useCallback((id: string, value: string) => {
+    setFlashcards((prev) =>
+      prev.map((fc) => (fc.id === id ? { ...fc, hint: value } : fc))
+    )
   }, [])
+
+  const handleDone = useCallback(async () => {
+    setError(null)
+
+    const filledFlashcards = flashcards.filter(
+      (fc) => fc.frontsideText.trim() || fc.backsideText.trim()
+    )
+
+    if (!title.trim()) {
+      setError('Deck name is required.')
+      return
+    }
+
+    if (filledFlashcards.length === 0) {
+      setError('Add at least one flashcard with content.')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/decks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          flashcards: filledFlashcards.map((fc) => ({
+            frontsideText: fc.frontsideText.trim(),
+            backsideText: fc.backsideText.trim(),
+            hint: fc.hint.trim() || undefined,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        setError(data.error ?? 'Something went wrong. Please try again.')
+        return
+      }
+
+      router.push('/decks-library/your-decks')
+    } catch {
+      setError('Network error. Please check your connection and try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [title, description, flashcards, router])
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-12">
@@ -57,11 +117,18 @@ export function NewDeckForm() {
         <button
           type="button"
           onClick={handleDone}
-          className="rounded-button border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark cursor-pointer border px-5 py-1.5 text-sm font-semibold transition-colors"
+          disabled={isSubmitting}
+          className="rounded-button border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark cursor-pointer border px-5 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Done
+          {isSubmitting ? 'Saving...' : 'Done'}
         </button>
       </header>
+
+      {error && (
+        <div className="mt-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       {/* Deck details */}
       <section className="mt-4 space-y-4">
@@ -92,8 +159,10 @@ export function NewDeckForm() {
             index={index}
             frontsideText={fc.frontsideText}
             backsideText={fc.backsideText}
+            hint={fc.hint}
             onFrontsideChange={(v) => updateFrontside(fc.id, v)}
             onBacksideChange={(v) => updateBackside(fc.id, v)}
+            onHintChange={(v) => updateHint(fc.id, v)}
             onDelete={() => deleteFlashcard(fc.id)}
             onGenerateAI={() => {
               // TODO: AI generation
