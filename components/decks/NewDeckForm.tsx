@@ -60,6 +60,11 @@ export function NewDeckForm() {
     )
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const generateAI = useCallback((_id: string) => {
+    // TODO: AI generation
+  }, [])
+
   const handleDone = useCallback(async () => {
     const filledFlashcards = flashcards.filter(
       (fc) => fc.frontsideText.trim() || fc.backsideText.trim()
@@ -98,6 +103,7 @@ export function NewDeckForm() {
         return
       }
 
+      toast.success('Deck created successfully!')
       router.push('/decks-library/your-decks')
     } catch {
       toast.error('Network error. Please check your connection and try again.')
@@ -148,17 +154,16 @@ export function NewDeckForm() {
         {flashcards.map((fc, index) => (
           <FlashcardEditor
             key={fc.id}
+            id={fc.id}
             index={index}
             frontsideText={fc.frontsideText}
             backsideText={fc.backsideText}
             hint={fc.hint}
-            onFrontsideChange={(v) => updateFrontside(fc.id, v)}
-            onBacksideChange={(v) => updateBackside(fc.id, v)}
-            onHintChange={(v) => updateHint(fc.id, v)}
-            onDelete={() => deleteFlashcard(fc.id)}
-            onGenerateAI={() => {
-              // TODO: AI generation
-            }}
+            onFrontsideChange={updateFrontside}
+            onBacksideChange={updateBackside}
+            onHintChange={updateHint}
+            onDelete={deleteFlashcard}
+            onGenerateAI={generateAI}
           />
         ))}
       </section>

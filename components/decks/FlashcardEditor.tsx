@@ -1,18 +1,21 @@
+import { memo } from 'react'
 import { Sparkles, Trash2 } from 'lucide-react'
 
 interface FlashcardEditorProps {
+  id: string
   index: number
   frontsideText: string
   backsideText: string
   hint: string
-  onFrontsideChange: (value: string) => void
-  onBacksideChange: (value: string) => void
-  onHintChange: (value: string) => void
-  onDelete: () => void
-  onGenerateAI: () => void
+  onFrontsideChange: (id: string, value: string) => void
+  onBacksideChange: (id: string, value: string) => void
+  onHintChange: (id: string, value: string) => void
+  onDelete: (id: string) => void
+  onGenerateAI: (id: string) => void
 }
 
-export function FlashcardEditor({
+export const FlashcardEditor = memo(function FlashcardEditor({
+  id,
   index,
   frontsideText,
   backsideText,
@@ -31,7 +34,7 @@ export function FlashcardEditor({
       <div className="absolute top-2 right-2 flex gap-1">
         <button
           type="button"
-          onClick={onGenerateAI}
+          onClick={() => onGenerateAI(id)}
           className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors"
           aria-label={`Generate AI suggestion for flashcard ${cardNumber}`}
         >
@@ -39,7 +42,7 @@ export function FlashcardEditor({
         </button>
         <button
           type="button"
-          onClick={onDelete}
+          onClick={() => onDelete(id)}
           className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors hover:text-red-500 dark:hover:text-red-400"
           aria-label={`Delete flashcard ${cardNumber}`}
         >
@@ -54,7 +57,7 @@ export function FlashcardEditor({
           label="Front"
           value={frontsideText}
           placeholder="Front side text"
-          onChange={onFrontsideChange}
+          onChange={(v) => onFrontsideChange(id, v)}
         />
 
         <div className="border-border dark:border-border-dark self-stretch border-l" />
@@ -64,7 +67,7 @@ export function FlashcardEditor({
           label="Back"
           value={backsideText}
           placeholder="Back side text"
-          onChange={onBacksideChange}
+          onChange={(v) => onBacksideChange(id, v)}
         />
       </div>
 
@@ -80,14 +83,14 @@ export function FlashcardEditor({
           id={`hint-${index}`}
           type="text"
           value={hint}
-          onChange={(e) => onHintChange(e.target.value)}
+          onChange={(e) => onHintChange(id, e.target.value)}
           placeholder="Add a hint to help recall this card"
           className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full border bg-transparent p-2 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
         />
       </div>
     </div>
   )
-}
+})
 
 /* ── Private sub-component ─────────────────────────────── */
 
