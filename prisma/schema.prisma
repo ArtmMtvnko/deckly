@@ -68,6 +68,7 @@ model Flashcard {
   frontsideImage String?
   backsideText   String
   backsideImage  String?
+  hint           String?
 
   deck      Deck       @relation(fields: [deckId], references: [id], onDelete: Cascade)
   srsStates SRSState[]
