@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, Plus, Sparkles } from 'lucide-react'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
@@ -52,7 +52,7 @@ export function NewDeckForm() {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-12">
       {/* Sticky header */}
-      <header className="bg-surface-primary dark:bg-surface-primary-dark sticky top-0 z-10 flex items-center justify-between py-4">
+      <header className="bg-surface-primary dark:bg-surface-primary-dark top-header sticky z-10 flex items-center justify-between py-4 md:top-0">
         <button
           type="button"
           onClick={() => router.back()}
@@ -110,8 +110,19 @@ export function NewDeckForm() {
         ))}
       </section>
 
-      {/* Add flashcard button */}
-      <div className="mt-6 flex justify-center">
+      {/* Add flashcard buttons */}
+      <div className="mt-6 flex justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            // TODO: AI generation
+          }}
+          className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark rounded-button flex cursor-pointer items-center gap-2 border px-5 py-2 text-sm font-medium transition-colors"
+        >
+          <Sparkles className="size-icon" />
+          Add with AI
+        </button>
+
         <button
           type="button"
           onClick={addFlashcard}
