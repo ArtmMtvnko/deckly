@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Sparkles } from 'lucide-react'
+import { Plus, Sparkles } from 'lucide-react'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
+import { BackButton } from '../common/BackButton'
 
 interface FlashcardDraft {
   id: string
@@ -18,7 +18,6 @@ function createEmptyFlashcard(): FlashcardDraft {
 }
 
 export function NewDeckForm() {
-  const router = useRouter()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [flashcards, setFlashcards] = useState<FlashcardDraft[]>([
@@ -53,14 +52,7 @@ export function NewDeckForm() {
     <div className="mx-auto max-w-3xl px-4 pb-12">
       {/* Sticky header */}
       <header className="bg-surface-primary dark:bg-surface-primary-dark top-header sticky z-10 flex items-center justify-between py-4 md:top-0">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="text-content-primary dark:text-content-primary-dark hover:text-content-secondary dark:hover:text-content-secondary-dark flex cursor-pointer items-center gap-1 text-sm font-medium transition-colors"
-        >
-          <ArrowLeft className="size-icon" />
-          Back
-        </button>
+        <BackButton />
 
         <button
           type="button"
