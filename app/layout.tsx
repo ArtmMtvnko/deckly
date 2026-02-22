@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
+import { Toaster } from 'sonner'
 
 import { geistMono, geistSans } from '@/lib/fonts'
 
@@ -32,6 +33,7 @@ export default function RootLayout({
           <Sidebar />
           <MainContent>{children}</MainContent>
         </SidebarProvider>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   )

@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
@@ -32,7 +33,6 @@ export function NewDeckForm() {
     createEmptyFlashcard(),
   ])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const addFlashcard = useCallback(() => {
     setFlashcards((prev) => [...prev, createEmptyFlashcard()])
@@ -61,19 +61,17 @@ export function NewDeckForm() {
   }, [])
 
   const handleDone = useCallback(async () => {
-    setError(null)
-
     const filledFlashcards = flashcards.filter(
       (fc) => fc.frontsideText.trim() || fc.backsideText.trim()
     )
 
     if (!title.trim()) {
-      setError('Deck name is required.')
+      toast.error('Deck name is required.')
       return
     }
 
     if (filledFlashcards.length === 0) {
-      setError('Add at least one flashcard with content.')
+      toast.error('Add at least one flashcard with content.')
       return
     }
 
@@ -96,13 +94,13 @@ export function NewDeckForm() {
 
       if (!response.ok) {
         const data = await response.json()
-        setError(data.error ?? 'Something went wrong. Please try again.')
+        toast.error(data.error ?? 'Something went wrong. Please try again.')
         return
       }
 
       router.push('/decks-library/your-decks')
     } catch {
-      setError('Network error. Please check your connection and try again.')
+      toast.error('Network error. Please check your connection and try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -123,12 +121,6 @@ export function NewDeckForm() {
           {isSubmitting ? 'Saving...' : 'Done'}
         </button>
       </header>
-
-      {error && (
-        <div className="mt-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
-          {error}
-        </div>
-      )}
 
       {/* Deck details */}
       <section className="mt-4 space-y-4">
