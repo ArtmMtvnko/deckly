@@ -1,7 +1,18 @@
 @config '../tailwind.config.ts';
 @import 'tailwindcss';
+@import 'react-loading-skeleton/dist/skeleton.css';
 
 @layer base {
+  :root {
+    --skeleton-base-color: var(--color-neutral-200);
+    --skeleton-highlight-color: var(--color-neutral-100);
+  }
+
+  .dark {
+    --skeleton-base-color: var(--color-neutral-800);
+    --skeleton-highlight-color: var(--color-neutral-700);
+  }
+
   body {
     font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   }
