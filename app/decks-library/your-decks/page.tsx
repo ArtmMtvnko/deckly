@@ -3,19 +3,12 @@ import { Plus } from 'lucide-react'
 
 import { DeckSearchBar } from '@/components/decks/DeckSearchBar'
 import { DeckCard } from '@/components/decks/DeckCard'
+import { getUserCreatedDecks } from '@/lib/decks'
+import { TEMP_USER_ID } from '@/lib/constants'
 
-const MOCK_DECKS = [
-  {
-    id: '1',
-    name: 'Deck 1',
-    description:
-      'This is the description of the deck. This is the test deck just for the sketch.',
-  },
-  { id: '2', name: 'Deck 2' },
-  { id: '3', name: 'Deck 3' },
-]
+export default async function YourDecksPage() {
+  const decks = await getUserCreatedDecks(TEMP_USER_ID)
 
-export default function YourDecksPage() {
   return (
     <>
       <div className="flex items-center gap-3">
@@ -29,16 +22,22 @@ export default function YourDecksPage() {
         </Link>
       </div>
 
-      <div className="space-y-3">
-        {MOCK_DECKS.map((deck) => (
-          <DeckCard
-            key={deck.id}
-            id={deck.id}
-            name={deck.name}
-            description={deck.description}
-          />
-        ))}
-      </div>
+      {decks.length === 0 ? (
+        <p className="text-content-secondary dark:text-content-secondary-dark py-8 text-center text-sm">
+          You haven&apos;t created any decks yet.
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {decks.map((deck) => (
+            <DeckCard
+              key={deck.id}
+              id={deck.id}
+              name={deck.title}
+              description={deck.description ?? undefined}
+            />
+          ))}
+        </div>
+      )}
     </>
   )
 }
