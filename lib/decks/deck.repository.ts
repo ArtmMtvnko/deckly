@@ -36,12 +36,46 @@ export async function findDeckWithFlashcards(deckId: string) {
   })
 }
 
-export async function findSrsStatesForDeck(
-  userId: string,
-  flashcardIds: string[]
-) {
-  return prisma.sRSState.findMany({
-    where: { userId, flashcardId: { in: flashcardIds } },
+export async function findDeckForLearning(deckId: string, userId: string) {
+  const now = new Date()
+
+  return prisma.deck.findUnique({
+    where: { id: deckId },
+    include: {
+      flashcards: {
+        where: {
+          OR: [
+            { srsStates: { none: { userId } } },
+            {
+              srsStates: { some: { userId, nextReview: { lte: now } } },
+            },
+          ],
+        },
+        orderBy: { createdAt: 'asc' },
+        include: { srsStates: { where: { userId } } },
+      },
+      _count: { select: { flashcards: true } },
+    },
+  })
+}
+
+export async function findNextReviewForDeck(deckId: string, userId: string) {
+  const now = new Date()
+
+  return prisma.sRSState.findFirst({
+    where: {
+      userId,
+      flashcard: { deckId },
+      nextReview: { gt: now },
+    },
+    orderBy: { nextReview: 'asc' },
+    select: { nextReview: true },
+  })
+}
+
+export async function findSrsState(userId: string, flashcardId: string) {
+  return prisma.sRSState.findUnique({
+    where: { userId_flashcardId: { userId, flashcardId } },
   })
 }
 

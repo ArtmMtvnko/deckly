@@ -1,11 +1,13 @@
-import { calculateSm2, QUALITY_MAP } from '@/lib/srs/sm2'
-import type { AnswerRating } from '@/lib/srs/sm2'
+import { calculateSm2 } from '@/lib/srs/sm2'
+import { QUALITY_MAP } from '@/lib/srs/srs.types'
+import type { AnswerRating } from '@/lib/srs/srs.types'
 
 import {
   createDeckWithFlashcards,
   findDecksByCreatorId,
-  findDeckWithFlashcards,
-  findSrsStatesForDeck,
+  findDeckForLearning,
+  findNextReviewForDeck,
+  findSrsState,
   upsertSrsState,
 } from './deck.repository'
 import type { CreateDeckInput } from './deck.schemas'
@@ -20,39 +22,25 @@ export async function createDeck(creatorId: string, input: CreateDeckInput) {
 }
 
 export async function getDeckForLearning(deckId: string, userId: string) {
-  const deck = await findDeckWithFlashcards(deckId)
+  const [deck, nextReviewResult] = await Promise.all([
+    findDeckForLearning(deckId, userId),
+    findNextReviewForDeck(deckId, userId),
+  ])
+
   if (!deck) return null
 
-  const srsStates = await findSrsStatesForDeck(
-    userId,
-    deck.flashcards.map((fc) => fc.id)
-  )
-
-  const srsMap = new Map(srsStates.map((s) => [s.flashcardId, s]))
-
-  const allWithSrs: FlashcardWithSrs[] = deck.flashcards.map((fc) => ({
+  const flashcards: FlashcardWithSrs[] = deck.flashcards.map((fc) => ({
     ...fc,
-    srsState: srsMap.get(fc.id) ?? defaultSrs(userId, fc.id),
+    srsState: fc.srsStates[0] ?? defaultSrs(userId, fc.id),
   }))
 
-  const now = new Date()
-  const flashcards = allWithSrs.filter((fc) => fc.srsState.nextReview <= now)
-
-  const nextReviewAt = allWithSrs
-    .filter((fc) => fc.srsState.nextReview > now)
-    .reduce<Date | null>(
-      (earliest, fc) =>
-        !earliest || fc.srsState.nextReview < earliest
-          ? fc.srsState.nextReview
-          : earliest,
-      null
-    )
-
   return {
-    ...deck,
+    id: deck.id,
+    title: deck.title,
+    description: deck.description,
     flashcards,
-    totalFlashcards: deck.flashcards.length,
-    nextReviewAt: nextReviewAt?.toISOString() ?? null,
+    totalFlashcards: deck._count.flashcards,
+    nextReviewAt: nextReviewResult?.nextReview.toISOString() ?? null,
   }
 }
 
@@ -61,7 +49,7 @@ export async function recordReview(
   flashcardId: string,
   rating: AnswerRating
 ) {
-  const [existing] = await findSrsStatesForDeck(userId, [flashcardId])
+  const existing = await findSrsState(userId, flashcardId)
   const current = existing ?? {
     repetitions: 0,
     intervalDays: 0,

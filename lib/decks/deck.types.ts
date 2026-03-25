@@ -1,4 +1,5 @@
 import type {
+  findDeckForLearning,
   findDecksByCreatorId,
   findDeckWithFlashcards,
 } from './deck.repository'
@@ -9,6 +10,10 @@ export type DeckSummary = Awaited<
 
 export type DeckWithFlashcards = NonNullable<
   Awaited<ReturnType<typeof findDeckWithFlashcards>>
+>
+
+export type DeckForLearningRaw = NonNullable<
+  Awaited<ReturnType<typeof findDeckForLearning>>
 >
 
 export interface SrsStateData {
