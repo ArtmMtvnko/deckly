@@ -28,3 +28,36 @@ export async function createDeckWithFlashcards(
     select: { id: true },
   })
 }
+
+export async function findDeckWithFlashcards(deckId: string) {
+  return prisma.deck.findUnique({
+    where: { id: deckId },
+    include: { flashcards: { orderBy: { createdAt: 'asc' } } },
+  })
+}
+
+export async function findSrsStatesForDeck(
+  userId: string,
+  flashcardIds: string[]
+) {
+  return prisma.sRSState.findMany({
+    where: { userId, flashcardId: { in: flashcardIds } },
+  })
+}
+
+export async function upsertSrsState(
+  userId: string,
+  flashcardId: string,
+  data: {
+    repetitions: number
+    intervalDays: number
+    easeFactor: number
+    nextReview: Date
+  }
+) {
+  return prisma.sRSState.upsert({
+    where: { userId_flashcardId: { userId, flashcardId } },
+    create: { userId, flashcardId, ...data, lastReviewed: new Date() },
+    update: { ...data, lastReviewed: new Date() },
+  })
+}
