@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
-import { BackButton } from '../common/BackButton'
+import { BackButton } from '@/components/common/BackButton'
 
 interface FlashcardDraft {
   id: string
@@ -35,7 +35,7 @@ export function NewDeckForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const addFlashcard = useCallback(() => {
-    setFlashcards((prev) => [...prev, createEmptyFlashcard()])
+    setFlashcards((prev) => [createEmptyFlashcard(), ...prev])
   }, [])
 
   const deleteFlashcard = useCallback((id: string) => {
@@ -149,27 +149,8 @@ export function NewDeckForm() {
 
       <SectionDivider label="Flashcards" />
 
-      {/* Flashcard list */}
-      <section className="space-y-4">
-        {flashcards.map((fc, index) => (
-          <FlashcardEditor
-            key={fc.id}
-            id={fc.id}
-            index={index}
-            frontsideText={fc.frontsideText}
-            backsideText={fc.backsideText}
-            hint={fc.hint}
-            onFrontsideChange={updateFrontside}
-            onBacksideChange={updateBackside}
-            onHintChange={updateHint}
-            onDelete={deleteFlashcard}
-            onGenerateAI={generateAI}
-          />
-        ))}
-      </section>
-
       {/* Add flashcard buttons */}
-      <div className="mt-6 flex justify-center gap-3">
+      <div className="mb-6 flex justify-center gap-3">
         <button
           type="button"
           onClick={() => {
@@ -190,6 +171,25 @@ export function NewDeckForm() {
           Add a flashcard
         </button>
       </div>
+
+      {/* Flashcard list */}
+      <section className="space-y-4">
+        {flashcards.map((fc, index) => (
+          <FlashcardEditor
+            key={fc.id}
+            id={fc.id}
+            index={index}
+            frontsideText={fc.frontsideText}
+            backsideText={fc.backsideText}
+            hint={fc.hint}
+            onFrontsideChange={updateFrontside}
+            onBacksideChange={updateBackside}
+            onHintChange={updateHint}
+            onDelete={deleteFlashcard}
+            onGenerateAI={generateAI}
+          />
+        ))}
+      </section>
     </div>
   )
 }
