@@ -2,11 +2,11 @@
 
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
+import { AddFlashcardsActions } from '@/components/decks/AddFlashcardsActions'
 import { BackButton } from '@/components/common/BackButton'
 
 interface FlashcardDraft {
@@ -63,6 +63,11 @@ export function NewDeckForm() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const generateAI = useCallback((_id: string) => {
     // TODO: AI generation
+  }, [])
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleGenerateAIBatch = useCallback((_prompt: string) => {
+    // TODO: AI batch generation
   }, [])
 
   const handleDone = useCallback(async () => {
@@ -149,28 +154,10 @@ export function NewDeckForm() {
 
       <SectionDivider label="Flashcards" />
 
-      {/* Add flashcard buttons */}
-      <div className="mb-6 flex justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => {
-            // TODO: AI generation
-          }}
-          className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark rounded-button flex cursor-pointer items-center gap-2 border px-5 py-2 text-sm font-medium transition-colors"
-        >
-          <Sparkles className="size-icon" />
-          Add with AI
-        </button>
-
-        <button
-          type="button"
-          onClick={addFlashcard}
-          className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark rounded-button flex cursor-pointer items-center gap-2 border px-5 py-2 text-sm font-medium transition-colors"
-        >
-          <Plus className="size-icon" />
-          Add a flashcard
-        </button>
-      </div>
+      <AddFlashcardsActions
+        onAddFlashcard={addFlashcard}
+        onGenerateAIBatch={handleGenerateAIBatch}
+      />
 
       {/* Flashcard list */}
       <section className="space-y-4">
