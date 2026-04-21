@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Trash2 } from 'lucide-react'
+
+import { DeckCardMenu } from './DeckCardMenu'
 
 interface DeckCardProps {
   id: string
@@ -23,13 +24,7 @@ export function DeckCard({ id, name, description }: DeckCardProps) {
           </p>
         )}
       </div>
-      <button
-        type="button"
-        className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark ml-4 shrink-0 cursor-pointer p-2 transition-colors hover:text-red-500 dark:hover:text-red-400"
-        aria-label={`Delete ${name}`}
-      >
-        <Trash2 className="size-icon" />
-      </button>
+      <DeckCardMenu deckId={id} deckName={name} />
     </Link>
   )
 }
