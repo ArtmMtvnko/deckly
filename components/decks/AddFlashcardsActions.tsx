@@ -4,6 +4,8 @@ import { useCallback, useState } from 'react'
 import { ArrowUp, Plus, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea'
+
 interface Props {
   onAddFlashcard: () => void
   onGenerateAIBatch: (prompt: string) => void
@@ -34,11 +36,12 @@ export function AddFlashcardsActions({
   if (isAIMode) {
     return (
       <div className="mb-6 space-y-3">
-        <textarea
+        <AutoResizeTextarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe the flashcards to generate..."
-          rows={3}
+          minRows={3}
+          maxRows={7}
           autoFocus
           className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full resize-none border bg-transparent px-4 py-3 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
         />
