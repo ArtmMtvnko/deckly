@@ -9,7 +9,7 @@ interface DeckCardMenuProps {
   deckName: string
 }
 
-export function DeckCardMenu({ deckId, deckName }: DeckCardMenuProps) {
+export function DeckCardMenu({ deckId }: DeckCardMenuProps) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -60,9 +60,6 @@ export function DeckCardMenu({ deckId, deckName }: DeckCardMenuProps) {
       <button
         type="button"
         onClick={handleTriggerClick}
-        aria-label={`Options for ${deckName}`}
-        aria-haspopup="menu"
-        aria-expanded={open}
         className="text-content-secondary hover:text-content-primary dark:text-content-secondary-dark dark:hover:text-content-primary-dark cursor-pointer rounded-md p-1.5 transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700"
       >
         <MoreVertical className="size-icon" />

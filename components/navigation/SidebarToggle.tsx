@@ -11,7 +11,6 @@ export function SidebarToggle() {
       <button
         onClick={toggleSidebar}
         className="size-icon-btn rounded-button text-interactive-text hover:bg-interactive-bg-hover hover:text-interactive-text-hover dark:text-interactive-text-dark dark:hover:bg-interactive-bg-hover-dark dark:hover:text-interactive-text-hover-dark flex items-center justify-center transition-colors"
-        aria-label="Toggle sidebar"
       >
         <Menu className="size-icon" />
       </button>

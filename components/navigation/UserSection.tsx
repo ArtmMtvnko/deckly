@@ -30,7 +30,6 @@ export function UserSection() {
           'size-icon-btn rounded-button text-interactive-text hover:bg-interactive-bg-hover hover:text-interactive-text-hover dark:text-interactive-text-dark dark:hover:bg-interactive-bg-hover-dark dark:hover:text-interactive-text-hover-dark flex shrink-0 items-center justify-center transition-all',
           isShowingDetails ? 'w-icon-btn opacity-100' : 'w-0 opacity-0'
         )}
-        aria-label="Log out"
       >
         <LogOut className="size-icon" />
       </button>

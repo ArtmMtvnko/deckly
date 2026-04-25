@@ -26,8 +26,6 @@ export const FlashcardEditor = memo(function FlashcardEditor({
   onDelete,
   onGenerateAI,
 }: FlashcardEditorProps) {
-  const cardNumber = index + 1
-
   return (
     <div className="rounded-button border-border dark:border-border-dark relative border p-4 pt-8">
       {/* Actions */}
@@ -36,7 +34,6 @@ export const FlashcardEditor = memo(function FlashcardEditor({
           type="button"
           onClick={() => onGenerateAI(id)}
           className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors"
-          aria-label={`Generate AI suggestion for flashcard ${cardNumber}`}
         >
           <Sparkles className="size-icon" />
         </button>
@@ -44,7 +41,6 @@ export const FlashcardEditor = memo(function FlashcardEditor({
           type="button"
           onClick={() => onDelete(id)}
           className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors hover:text-red-500 dark:hover:text-red-400"
-          aria-label={`Delete flashcard ${cardNumber}`}
         >
           <Trash2 className="size-icon" />
         </button>
