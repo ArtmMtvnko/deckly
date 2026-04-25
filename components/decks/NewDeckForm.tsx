@@ -4,6 +4,8 @@ import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import type { GeneratedFlashcard } from '@/lib/ai/ai.schemas'
+
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
 import { AddFlashcardsActions } from '@/components/decks/AddFlashcardsActions'
@@ -33,6 +35,7 @@ export function NewDeckForm() {
     createEmptyFlashcard(),
   ])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const addFlashcard = useCallback(() => {
     setFlashcards((prev) => [createEmptyFlashcard(), ...prev])
@@ -65,10 +68,47 @@ export function NewDeckForm() {
     // TODO: AI generation
   }, [])
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleGenerateAIBatch = useCallback((_prompt: string) => {
-    // TODO: AI batch generation
-  }, [])
+  const handleGenerateAIBatch = useCallback(
+    async (prompt: string): Promise<boolean> => {
+      setIsGenerating(true)
+      try {
+        const response = await fetch('/api/ai/flashcards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        })
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          toast.error(data.error ?? 'Failed to generate flashcards.')
+          return false
+        }
+
+        const data: {
+          flashcards: GeneratedFlashcard[]
+        } = await response.json()
+
+        const generated: FlashcardDraft[] = data.flashcards.map((fc) => ({
+          id: crypto.randomUUID(),
+          frontsideText: fc.frontsideText,
+          backsideText: fc.backsideText,
+          hint: fc.hint ?? '',
+        }))
+
+        setFlashcards((prev) => [...generated, ...prev])
+        toast.success('Generated 3 flashcards')
+        return true
+      } catch {
+        toast.error(
+          'Network error. Please check your connection and try again.'
+        )
+        return false
+      } finally {
+        setIsGenerating(false)
+      }
+    },
+    []
+  )
 
   const handleDone = useCallback(async () => {
     const filledFlashcards = flashcards.filter(
@@ -157,6 +197,7 @@ export function NewDeckForm() {
       <AddFlashcardsActions
         onAddFlashcard={addFlashcard}
         onGenerateAIBatch={handleGenerateAIBatch}
+        isGenerating={isGenerating}
       />
 
       {/* Flashcard list */}
