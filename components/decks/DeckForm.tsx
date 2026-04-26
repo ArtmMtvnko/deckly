@@ -139,7 +139,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
     []
   )
 
-  const handleDone = useCallback(async () => {
+  const handleSave = useCallback(async () => {
     const filledFlashcards = flashcards.filter(
       (fc) => fc.frontsideText.trim() || fc.backsideText.trim()
     )
@@ -183,14 +183,8 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
         return
       }
 
-      if (isEditing) {
-        toast.success('Deck updated successfully!')
-        router.push(`/decks/${initialDeck!.id}`)
-        router.refresh()
-      } else {
-        toast.success('Deck created successfully!')
-        router.push('/decks-library/your-decks')
-      }
+      toast.success(`Deck ${isEditing ? 'updated' : 'created'} successfully!`)
+      router.push('/decks-library/your-decks')
     } catch {
       toast.error('Network error. Please check your connection and try again.')
     } finally {
@@ -198,7 +192,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
     }
   }, [title, description, flashcards, router, isEditing, initialDeck])
 
-  const submitLabel = isSubmitting ? 'Saving...' : isEditing ? 'Save' : 'Done'
+  const submitLabel = isSubmitting ? 'Saving...' : 'Save'
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-12">
@@ -208,7 +202,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
 
         <button
           type="button"
-          onClick={handleDone}
+          onClick={handleSave}
           disabled={isSubmitting}
           className="rounded-button border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark cursor-pointer border px-5 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
