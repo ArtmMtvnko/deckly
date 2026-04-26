@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import type { CreateDeckInput } from './deck.schemas'
+import type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 
 export async function findDecksByCreatorId(creatorId: string) {
   return prisma.deck.findMany({
@@ -33,6 +33,60 @@ export async function findDeckWithFlashcards(deckId: string) {
   return prisma.deck.findUnique({
     where: { id: deckId },
     include: { flashcards: { orderBy: { createdAt: 'asc' } } },
+  })
+}
+
+export async function updateDeckWithFlashcards(
+  deckId: string,
+  data: UpdateDeckInput
+) {
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.flashcard.findMany({
+      where: { deckId },
+      select: { id: true },
+    })
+
+    const incomingIds = new Set(
+      data.flashcards
+        .map((fc) => fc.id)
+        .filter((id): id is string => Boolean(id))
+    )
+    const toDelete = existing
+      .filter((fc) => !incomingIds.has(fc.id))
+      .map((fc) => fc.id)
+
+    await tx.deck.update({
+      where: { id: deckId },
+      data: { title: data.title, description: data.description },
+    })
+
+    if (toDelete.length > 0) {
+      await tx.flashcard.deleteMany({ where: { id: { in: toDelete } } })
+    }
+
+    for (const fc of data.flashcards) {
+      if (fc.id) {
+        await tx.flashcard.update({
+          where: { id: fc.id },
+          data: {
+            frontsideText: fc.frontsideText,
+            backsideText: fc.backsideText,
+            hint: fc.hint ?? null,
+          },
+        })
+      } else {
+        await tx.flashcard.create({
+          data: {
+            deckId,
+            frontsideText: fc.frontsideText,
+            backsideText: fc.backsideText,
+            hint: fc.hint ?? null,
+          },
+        })
+      }
+    }
+
+    return { id: deckId }
   })
 }
 

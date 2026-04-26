@@ -6,11 +6,13 @@ import {
   createDeckWithFlashcards,
   findDecksByCreatorId,
   findDeckForLearning,
+  findDeckWithFlashcards,
   findNextReviewForDeck,
   findSrsState,
+  updateDeckWithFlashcards,
   upsertSrsState,
 } from './deck.repository'
-import type { CreateDeckInput } from './deck.schemas'
+import type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 import type { FlashcardWithSrs } from './deck.types'
 
 export async function getUserCreatedDecks(userId: string) {
@@ -19,6 +21,22 @@ export async function getUserCreatedDecks(userId: string) {
 
 export async function createDeck(creatorId: string, input: CreateDeckInput) {
   return createDeckWithFlashcards(creatorId, input)
+}
+
+export async function getDeckForEditing(deckId: string, userId: string) {
+  const deck = await findDeckWithFlashcards(deckId)
+  if (!deck || deck.creatorId !== userId) return null
+  return deck
+}
+
+export async function updateDeck(
+  deckId: string,
+  userId: string,
+  input: UpdateDeckInput
+) {
+  const deck = await findDeckWithFlashcards(deckId)
+  if (!deck || deck.creatorId !== userId) return null
+  return updateDeckWithFlashcards(deckId, input)
 }
 
 export async function getDeckForLearning(deckId: string, userId: string) {

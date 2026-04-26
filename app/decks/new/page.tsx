@@ -1,5 +1,5 @@
-import { NewDeckForm } from '@/components/decks/NewDeckForm'
+import { DeckForm } from '@/components/decks/DeckForm'
 
 export default function NewDeckPage() {
-  return <NewDeckForm />
+  return <DeckForm />
 }

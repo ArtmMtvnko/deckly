@@ -1,18 +1,32 @@
+import { notFound } from 'next/navigation'
+
+import { DeckForm } from '@/components/decks/DeckForm'
+import { TEMP_USER_ID } from '@/lib/constants'
+import { getDeckForEditing } from '@/lib/decks'
+
 interface EditDeckPageProps {
   params: Promise<{ id: string }>
 }
 
 export default async function EditDeckPage({ params }: EditDeckPageProps) {
   const { id } = await params
+  const deck = await getDeckForEditing(id, TEMP_USER_ID)
+
+  if (!deck) notFound()
 
   return (
-    <div className="p-6">
-      <h1 className="text-content-primary dark:text-content-primary-dark text-xl font-semibold">
-        Edit deck
-      </h1>
-      <p className="text-content-secondary dark:text-content-secondary-dark mt-2 text-sm">
-        Deck editing is coming soon. (ID: {id})
-      </p>
-    </div>
+    <DeckForm
+      initialDeck={{
+        id: deck.id,
+        title: deck.title,
+        description: deck.description,
+        flashcards: deck.flashcards.map((fc) => ({
+          id: fc.id,
+          frontsideText: fc.frontsideText,
+          backsideText: fc.backsideText,
+          hint: fc.hint,
+        })),
+      }}
+    />
   )
 }

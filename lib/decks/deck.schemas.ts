@@ -15,3 +15,17 @@ export const createDeckSchema = z.object({
 })
 
 export type CreateDeckInput = z.infer<typeof createDeckSchema>
+
+const updateFlashcardSchema = flashcardSchema.extend({
+  id: z.uuid().optional(),
+})
+
+export const updateDeckSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(255),
+  description: z.string().max(1000).optional(),
+  flashcards: z
+    .array(updateFlashcardSchema)
+    .min(1, 'At least one flashcard is required'),
+})
+
+export type UpdateDeckInput = z.infer<typeof updateDeckSchema>

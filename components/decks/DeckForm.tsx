@@ -13,9 +13,26 @@ import { BackButton } from '@/components/common/BackButton'
 
 interface FlashcardDraft {
   id: string
+  dbId?: string
   frontsideText: string
   backsideText: string
   hint: string
+}
+
+interface InitialDeck {
+  id: string
+  title: string
+  description: string | null
+  flashcards: Array<{
+    id: string
+    frontsideText: string
+    backsideText: string
+    hint: string | null
+  }>
+}
+
+interface DeckFormProps {
+  initialDeck?: InitialDeck
 }
 
 function createEmptyFlashcard(): FlashcardDraft {
@@ -27,13 +44,25 @@ function createEmptyFlashcard(): FlashcardDraft {
   }
 }
 
-export function NewDeckForm() {
+function flashcardsFromInitial(initial: InitialDeck): FlashcardDraft[] {
+  return initial.flashcards.map((fc) => ({
+    id: fc.id,
+    dbId: fc.id,
+    frontsideText: fc.frontsideText,
+    backsideText: fc.backsideText,
+    hint: fc.hint ?? '',
+  }))
+}
+
+export function DeckForm({ initialDeck }: DeckFormProps) {
   const router = useRouter()
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [flashcards, setFlashcards] = useState<FlashcardDraft[]>([
-    createEmptyFlashcard(),
-  ])
+  const isEditing = Boolean(initialDeck)
+
+  const [title, setTitle] = useState(initialDeck?.title ?? '')
+  const [description, setDescription] = useState(initialDeck?.description ?? '')
+  const [flashcards, setFlashcards] = useState<FlashcardDraft[]>(() =>
+    initialDeck ? flashcardsFromInitial(initialDeck) : [createEmptyFlashcard()]
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -128,34 +157,48 @@ export function NewDeckForm() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/decks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim(),
-          flashcards: filledFlashcards.map((fc) => ({
-            frontsideText: fc.frontsideText.trim(),
-            backsideText: fc.backsideText.trim(),
-            hint: fc.hint.trim() || undefined,
-          })),
-        }),
-      })
+      const payload = {
+        title: title.trim(),
+        description: description.trim(),
+        flashcards: filledFlashcards.map((fc) => ({
+          ...(fc.dbId ? { id: fc.dbId } : {}),
+          frontsideText: fc.frontsideText.trim(),
+          backsideText: fc.backsideText.trim(),
+          hint: fc.hint.trim() || undefined,
+        })),
+      }
+
+      const response = await fetch(
+        isEditing ? `/api/decks/${initialDeck!.id}` : '/api/decks',
+        {
+          method: isEditing ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      )
 
       if (!response.ok) {
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
         toast.error(data.error ?? 'Something went wrong. Please try again.')
         return
       }
 
-      toast.success('Deck created successfully!')
-      router.push('/decks-library/your-decks')
+      if (isEditing) {
+        toast.success('Deck updated successfully!')
+        router.push(`/decks/${initialDeck!.id}`)
+        router.refresh()
+      } else {
+        toast.success('Deck created successfully!')
+        router.push('/decks-library/your-decks')
+      }
     } catch {
       toast.error('Network error. Please check your connection and try again.')
     } finally {
       setIsSubmitting(false)
     }
-  }, [title, description, flashcards, router])
+  }, [title, description, flashcards, router, isEditing, initialDeck])
+
+  const submitLabel = isSubmitting ? 'Saving...' : isEditing ? 'Save' : 'Done'
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-12">
@@ -169,7 +212,7 @@ export function NewDeckForm() {
           disabled={isSubmitting}
           className="rounded-button border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark cursor-pointer border px-5 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? 'Saving...' : 'Done'}
+          {submitLabel}
         </button>
       </header>
 
