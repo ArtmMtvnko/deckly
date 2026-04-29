@@ -116,8 +116,19 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id
-        token.username = (user as { name?: string }).name ?? token.username
+        const name = (user as { name?: string | null }).name
+
+        if (name) {
+          token.username = name
+        } else if (user.id) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { username: true },
+          })
+          token.username = dbUser?.username ?? token.username
+        }
       }
+
       return token
     },
     async session({ session, token }) {
