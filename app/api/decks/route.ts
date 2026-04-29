@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import { TEMP_USER_ID } from '@/lib/constants'
+import { requireUserId } from '@/lib/auth/session'
 import { createDeck, createDeckSchema } from '@/lib/decks'
 
 export async function POST(request: Request) {
+  const userId = await requireUserId()
   const body = await request.json()
   const result = createDeckSchema.safeParse(body)
 
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const deck = await createDeck(TEMP_USER_ID, result.data)
+  const deck = await createDeck(userId, result.data)
 
   return NextResponse.json({ id: deck.id }, { status: 201 })
 }

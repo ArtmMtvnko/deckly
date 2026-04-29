@@ -4,10 +4,11 @@ import { Plus } from 'lucide-react'
 import { DeckSearchBar } from '@/components/decks/DeckSearchBar'
 import { DeckCard } from '@/components/decks/DeckCard'
 import { getUserCreatedDecks } from '@/lib/decks'
-import { TEMP_USER_ID } from '@/lib/constants'
+import { requireUserId } from '@/lib/auth/session'
 
 export default async function YourDecksPage() {
-  const decks = await getUserCreatedDecks(TEMP_USER_ID)
+  const userId = await requireUserId()
+  const decks = await getUserCreatedDecks(userId)
 
   return (
     <>

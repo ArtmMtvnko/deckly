@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import { DeckForm } from '@/components/decks/DeckForm'
-import { TEMP_USER_ID } from '@/lib/constants'
+import { requireUserId } from '@/lib/auth/session'
 import { getDeckForEditing } from '@/lib/decks'
 
 interface EditDeckPageProps {
@@ -9,8 +9,9 @@ interface EditDeckPageProps {
 }
 
 export default async function EditDeckPage({ params }: EditDeckPageProps) {
+  const userId = await requireUserId()
   const { id } = await params
-  const deck = await getDeckForEditing(id, TEMP_USER_ID)
+  const deck = await getDeckForEditing(id, userId)
 
   if (!deck) notFound()
 

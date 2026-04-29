@@ -50,6 +50,7 @@ next-env.d.ts
 # prisma generated client
 /lib/generated/prisma
 
+.claude/
 CLAUDE.md
 
 TODO.md

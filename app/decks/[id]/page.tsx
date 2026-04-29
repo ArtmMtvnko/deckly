@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import { FlashcardLearning } from '@/components/decks/FlashcardLearning'
-import { TEMP_USER_ID } from '@/lib/constants'
+import { requireUserId } from '@/lib/auth/session'
 import { getDeckForLearning } from '@/lib/decks'
 
 interface DeckPageProps {
@@ -9,8 +9,9 @@ interface DeckPageProps {
 }
 
 export default async function DeckPage({ params }: DeckPageProps) {
+  const userId = await requireUserId()
   const { id } = await params
-  const deck = await getDeckForLearning(id, TEMP_USER_ID)
+  const deck = await getDeckForLearning(id, userId)
 
   if (!deck) notFound()
 
