@@ -13,19 +13,28 @@ export async function loginAction(
   _prevState: AuthFormState,
   formData: FormData
 ): Promise<AuthFormState> {
+  const inputEmail = formData.get('email')?.toString() ?? ''
+  const inputPassword = formData.get('password')?.toString() ?? ''
+  const values = { email: inputEmail }
+
   const parsed = loginSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
+    email: inputEmail,
+    password: inputPassword,
   })
 
   if (!parsed.success) {
-    return { fieldErrors: z.flattenError(parsed.error).fieldErrors }
+    return {
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      values,
+    }
   }
+
+  const { email, password } = parsed.data
 
   try {
     await signIn('credentials', {
-      email: parsed.data.email,
-      password: parsed.data.password,
+      email,
+      password,
       redirectTo: '/decks-library/your-decks',
     })
   } catch (err) {
@@ -35,26 +44,35 @@ export async function loginAction(
           err.type === 'CredentialsSignin'
             ? 'Invalid email or password'
             : 'Sign-in failed',
+        values,
       }
     }
     throw err
   }
 
-  return undefined
+  return {}
 }
 
 export async function registerAction(
   _prevState: AuthFormState,
   formData: FormData
 ): Promise<AuthFormState> {
+  const inputEmail = formData.get('email')?.toString() ?? ''
+  const inputUsername = formData.get('username')?.toString() ?? ''
+  const inputPassword = formData.get('password')?.toString() ?? ''
+  const values = { email: inputEmail, username: inputUsername }
+
   const parsed = registerSchema.safeParse({
-    email: formData.get('email'),
-    username: formData.get('username'),
-    password: formData.get('password'),
+    email: inputEmail,
+    username: inputUsername,
+    password: inputPassword,
   })
 
   if (!parsed.success) {
-    return { fieldErrors: z.flattenError(parsed.error).fieldErrors }
+    return {
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      values,
+    }
   }
 
   const { email, username, password } = parsed.data
@@ -70,7 +88,7 @@ export async function registerAction(
       fieldErrors.email = ['Email already registered']
     if (existing.username === username)
       fieldErrors.username = ['Username taken']
-    return { fieldErrors }
+    return { fieldErrors, values }
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
@@ -84,12 +102,15 @@ export async function registerAction(
     })
   } catch (err) {
     if (err instanceof AuthError) {
-      return { error: 'Account created but sign-in failed. Please log in.' }
+      return {
+        error: 'Account created but sign-in failed. Please log in.',
+        values,
+      }
     }
     throw err
   }
 
-  return undefined
+  return {}
 }
 
 export async function googleSignInAction(): Promise<void> {

@@ -7,6 +7,8 @@ import { useFormStatus } from 'react-dom'
 import { registerAction, googleSignInAction } from '@/lib/auth/actions'
 import type { AuthFormState } from '@/lib/auth/types'
 
+import { AuthErrorBanner } from './AuthErrorBanner'
+import { AuthInput } from './AuthInput'
 import { GoogleIcon } from './GoogleIcon'
 
 function SubmitButton() {
@@ -39,7 +41,7 @@ function GoogleButton() {
 export function RegisterForm({ initialError }: { initialError?: string }) {
   const [state, formAction] = useActionState<AuthFormState, FormData>(
     registerAction,
-    initialError ? { error: initialError } : undefined
+    initialError ? { error: initialError } : {}
   )
 
   return (
@@ -53,60 +55,33 @@ export function RegisterForm({ initialError }: { initialError?: string }) {
         </p>
       </div>
 
-      <form action={formAction} className="space-y-4">
-        {state?.error && (
-          <p className="rounded-button border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">
-            {state.error}
-          </p>
-        )}
+      <form action={formAction} noValidate className="space-y-4">
+        {state.error && <AuthErrorBanner message={state.error} />}
 
-        <div className="space-y-1">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            autoComplete="email"
-            required
-            className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full border bg-transparent px-4 py-3 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
-          />
-          {state?.fieldErrors?.email?.map((msg) => (
-            <p key={msg} className="text-xs text-red-600 dark:text-red-400">
-              {msg}
-            </p>
-          ))}
-        </div>
+        <AuthInput
+          name="email"
+          type="email"
+          placeholder="Email"
+          autoComplete="email"
+          defaultValue={state.values?.email}
+          errors={state.fieldErrors?.email}
+        />
 
-        <div className="space-y-1">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            autoComplete="username"
-            required
-            className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full border bg-transparent px-4 py-3 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
-          />
-          {state?.fieldErrors?.username?.map((msg) => (
-            <p key={msg} className="text-xs text-red-600 dark:text-red-400">
-              {msg}
-            </p>
-          ))}
-        </div>
+        <AuthInput
+          name="username"
+          placeholder="Username"
+          autoComplete="username"
+          defaultValue={state.values?.username}
+          errors={state.fieldErrors?.username}
+        />
 
-        <div className="space-y-1">
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            autoComplete="new-password"
-            required
-            className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full border bg-transparent px-4 py-3 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
-          />
-          {state?.fieldErrors?.password?.map((msg) => (
-            <p key={msg} className="text-xs text-red-600 dark:text-red-400">
-              {msg}
-            </p>
-          ))}
-        </div>
+        <AuthInput
+          name="password"
+          type="password"
+          placeholder="Password"
+          autoComplete="new-password"
+          errors={state.fieldErrors?.password}
+        />
 
         <SubmitButton />
       </form>
