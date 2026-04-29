@@ -21,12 +21,27 @@ async function deriveUniqueUsername(email: string): Promise<string> {
       .toLowerCase()
       .replace(/[^a-zA-Z0-9_-]/g, '')
       .slice(0, 18) || 'user'
-  let candidate = base
-  let i = 1
-  while (await prisma.user.findUnique({ where: { username: candidate } })) {
-    candidate = `${base}-${i++}`.slice(0, 20)
+
+  const existingUsers = await prisma.user.findMany({
+    where: { username: { startsWith: base } },
+    select: { username: true },
+  })
+  const taken = new Set(existingUsers.map((u) => u.username))
+
+  if (!taken.has(base)) return base
+
+  for (let i = 1; i < 100; i++) {
+    const candidate = `${base}-${i}`.slice(0, 20)
+    if (!taken.has(candidate)) return candidate
   }
-  return candidate
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const suffix = Math.random().toString(36).slice(2, 8)
+    const candidate = `${base}-${suffix}`.slice(0, 20)
+    if (!taken.has(candidate)) return candidate
+  }
+
+  throw new Error('Could not derive a unique username')
 }
 
 const baseAdapter = PrismaAdapter(
@@ -87,7 +102,7 @@ export const {
           id: user.id,
           email: user.email,
           name: user.username,
-          image: user.image ?? undefined,
+          image: user.image,
         }
       },
     }),

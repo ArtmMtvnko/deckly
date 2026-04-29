@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcryptjs'
 import { AuthError } from 'next-auth'
+import { z } from 'zod'
 
 import { signIn, signOut } from '@/auth'
 import prisma from '@/lib/prisma'
@@ -18,7 +19,7 @@ export async function loginAction(
   })
 
   if (!parsed.success) {
-    return { fieldErrors: parsed.error.flatten().fieldErrors }
+    return { fieldErrors: z.flattenError(parsed.error).fieldErrors }
   }
 
   try {
@@ -53,7 +54,7 @@ export async function registerAction(
   })
 
   if (!parsed.success) {
-    return { fieldErrors: parsed.error.flatten().fieldErrors }
+    return { fieldErrors: z.flattenError(parsed.error).fieldErrors }
   }
 
   const { email, username, password } = parsed.data
