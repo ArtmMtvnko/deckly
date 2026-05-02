@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import { Globe, MoreVertical, Pencil, Trash2 } from 'lucide-react'
 
 interface DeckCardMenuProps {
   deckId: string
   deckName: string
+  showPublish?: boolean
 }
 
-export function DeckCardMenu({ deckId }: DeckCardMenuProps) {
+export function DeckCardMenu({ deckId, showPublish }: DeckCardMenuProps) {
   const [open, setOpen] = useState(false)
+  const [publishing, setPublishing] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -55,6 +57,26 @@ export function DeckCardMenu({ deckId }: DeckCardMenuProps) {
     // TODO: Implement delete functionality
   }
 
+  async function handlePublish(event: React.MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+    if (publishing) return
+    setPublishing(true)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/publish`, {
+        method: 'POST',
+      })
+      if (!res.ok) {
+        console.error('Failed to publish deck', await res.text())
+        return
+      }
+      setOpen(false)
+      router.refresh()
+    } finally {
+      setPublishing(false)
+    }
+  }
+
   return (
     <div ref={rootRef} className="relative ml-4 shrink-0">
       <button
@@ -79,6 +101,18 @@ export function DeckCardMenu({ deckId }: DeckCardMenuProps) {
             <Pencil className="size-icon-sm" />
             Edit
           </button>
+          {showPublish && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={handlePublish}
+              disabled={publishing}
+              className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-green-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-green-400"
+            >
+              <Globe className="size-icon-sm" />
+              {publishing ? 'Publishing…' : 'Publish'}
+            </button>
+          )}
           <button
             type="button"
             role="menuitem"

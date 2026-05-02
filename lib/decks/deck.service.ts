@@ -1,10 +1,12 @@
+import { updatePublicDeck } from '@/lib/search'
 import { calculateSm2 } from '@/lib/srs/sm2'
 import { QUALITY_MAP } from '@/lib/srs/srs.types'
 import type { AnswerRating } from '@/lib/srs/srs.types'
 
+import { findPublicDeckById } from './public-deck.repository'
 import {
   createDeckWithFlashcards,
-  findDecksByCreatorId,
+  findUnpublishedDecksByCreatorId,
   findDeckForLearning,
   findDeckWithFlashcards,
   findNextReviewForDeck,
@@ -15,8 +17,8 @@ import {
 import type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 import type { FlashcardWithSrs } from './deck.types'
 
-export async function getUserCreatedDecks(userId: string) {
-  return findDecksByCreatorId(userId)
+export async function getUserUnpublishedDecks(userId: string) {
+  return findUnpublishedDecksByCreatorId(userId)
 }
 
 export async function createDeck(creatorId: string, input: CreateDeckInput) {
@@ -36,7 +38,19 @@ export async function updateDeck(
 ) {
   const deck = await findDeckWithFlashcards(deckId)
   if (!deck || deck.creatorId !== userId) return null
-  return updateDeckWithFlashcards(deckId, input)
+
+  const result = await updateDeckWithFlashcards(deckId, input)
+
+  const publicDeck = await findPublicDeckById(deckId)
+  if (publicDeck) {
+    await updatePublicDeck(deckId, {
+      title: input.title,
+      description: input.description ?? '',
+      updatedAt: Date.now(),
+    })
+  }
+
+  return result
 }
 
 export async function getDeckForLearning(deckId: string, userId: string) {

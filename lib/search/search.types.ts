@@ -1,6 +1,5 @@
 export interface PublicDeckHit {
   objectID: string
-  deckId: string
   title: string
   description: string
   rating: number

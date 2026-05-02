@@ -1,11 +1,11 @@
 import type {
   findDeckForLearning,
-  findDecksByCreatorId,
+  findUnpublishedDecksByCreatorId,
   findDeckWithFlashcards,
 } from './deck.repository'
 
 export type DeckSummary = Awaited<
-  ReturnType<typeof findDecksByCreatorId>
+  ReturnType<typeof findUnpublishedDecksByCreatorId>
 >[number]
 
 export type DeckWithFlashcards = NonNullable<

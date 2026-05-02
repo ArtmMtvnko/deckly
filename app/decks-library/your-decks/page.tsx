@@ -3,12 +3,12 @@ import { Plus } from 'lucide-react'
 
 import { DeckSearchBar } from '@/components/decks/DeckSearchBar'
 import { DeckCard } from '@/components/decks/DeckCard'
-import { getUserCreatedDecks } from '@/lib/decks'
+import { getUserUnpublishedDecks } from '@/lib/decks'
 import { requireUserId } from '@/lib/auth/session'
 
 export default async function YourDecksPage() {
   const userId = await requireUserId()
-  const decks = await getUserCreatedDecks(userId)
+  const decks = await getUserUnpublishedDecks(userId)
 
   return (
     <>
@@ -35,6 +35,7 @@ export default async function YourDecksPage() {
               id={deck.id}
               name={deck.title}
               description={deck.description ?? undefined}
+              showPublish
             />
           ))}
         </div>

@@ -1,9 +1,9 @@
 import prisma from '@/lib/prisma'
 import type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 
-export async function findDecksByCreatorId(creatorId: string) {
+export async function findUnpublishedDecksByCreatorId(creatorId: string) {
   return prisma.deck.findMany({
-    where: { creatorId },
+    where: { creatorId, publicDeck: null },
     orderBy: { updatedAt: 'desc' },
   })
 }
