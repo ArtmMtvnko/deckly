@@ -6,7 +6,6 @@ import { twMerge } from 'tailwind-merge'
 
 const FILTERS = [
   { href: '/decks-library/your-decks', label: 'Your decks' },
-  { href: '/decks-library/public-decks', label: 'Public decks' },
   { href: '/decks-library/copied-decks', label: 'Copied decks' },
   { href: '/decks-library/published-decks', label: 'Published decks' },
 ] as const
