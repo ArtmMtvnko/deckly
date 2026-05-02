@@ -2,11 +2,11 @@ import 'server-only'
 import { algoliasearch } from 'algoliasearch'
 
 const appId = process.env.ALGOLIA_APP_ID
-const searchKey = process.env.ALGOLIA_SEARCH_API_KEY
+const writeKey = process.env.ALGOLIA_WRITE_API_KEY
 
-if (!appId || !searchKey) {
-  throw new Error('Missing ALGOLIA_APP_ID or ALGOLIA_SEARCH_API_KEY')
+if (!appId || !writeKey) {
+  throw new Error('Missing ALGOLIA_APP_ID or ALGOLIA_WRITE_API_KEY')
 }
 
 export const PUBLIC_DECKS_INDEX = 'deckly_hub'
-export const algolia = algoliasearch(appId, searchKey)
+export const algolia = algoliasearch(appId, writeKey)

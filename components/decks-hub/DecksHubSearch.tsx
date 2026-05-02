@@ -82,8 +82,8 @@ export function DecksHubSearch() {
             Decks hub
           </h1>
           <p className="text-content-secondary dark:text-content-secondary-dark mt-2 text-sm">
-            Search for published decks by other people and download them to
-            your library.
+            Search for published decks by other people and download them to your
+            library.
           </p>
         </div>
       )}
