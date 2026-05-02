@@ -76,6 +76,18 @@ export function DecksHubSearch() {
           : 'flex flex-col'
       }
     >
+      {isInitial && (
+        <div className="mb-6 w-full max-w-3xl self-center text-center">
+          <h1 className="text-content-primary dark:text-content-primary-dark text-2xl font-bold">
+            Decks hub
+          </h1>
+          <p className="text-content-secondary dark:text-content-secondary-dark mt-2 text-sm">
+            Search for published decks by other people and download them to
+            your library.
+          </p>
+        </div>
+      )}
+
       <div className="flex w-full max-w-3xl items-center gap-2 self-center">
         <div className="relative flex-1">
           <input
