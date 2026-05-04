@@ -27,3 +27,21 @@ export async function createPublicDeck(deckId: string) {
 export async function findPublicDeckById(deckId: string) {
   return prisma.publicDeck.findUnique({ where: { deckId } })
 }
+
+export async function findPublicDeckPreview(deckId: string) {
+  return prisma.publicDeck.findUnique({
+    where: { deckId },
+    include: {
+      deck: {
+        include: {
+          creator: { select: { username: true } },
+          flashcards: {
+            take: 10,
+            orderBy: { createdAt: 'asc' },
+          },
+          _count: { select: { flashcards: true } },
+        },
+      },
+    },
+  })
+}

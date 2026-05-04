@@ -6,7 +6,11 @@ export {
   recordReview,
   updateDeck,
 } from './deck.service'
-export { getUserPublishedDecks, publishDeck } from './public-deck.service'
+export {
+  getPublicDeckPreview,
+  getUserPublishedDecks,
+  publishDeck,
+} from './public-deck.service'
 export { createDeckSchema, updateDeckSchema } from './deck.schemas'
 export type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 export type {

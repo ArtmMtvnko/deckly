@@ -2,12 +2,17 @@ import { indexPublicDeck } from '@/lib/search'
 
 import {
   createPublicDeck,
+  findPublicDeckPreview,
   findPublishableDeck,
   findPublishedDecksByCreatorId,
 } from './public-deck.repository'
 
 export async function getUserPublishedDecks(userId: string) {
   return findPublishedDecksByCreatorId(userId)
+}
+
+export async function getPublicDeckPreview(deckId: string) {
+  return findPublicDeckPreview(deckId)
 }
 
 export async function publishDeck(deckId: string, userId: string) {

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Star, Download } from 'lucide-react'
 
 import type { PublicDeckHit } from '@/lib/search'
@@ -10,7 +11,10 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }
 
 export function PublicDeckCard({ hit }: PublicDeckCardProps) {
   return (
-    <article className="rounded-button border-border dark:border-border-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark flex flex-col gap-3 border p-4 transition-colors">
+    <Link
+      href={`/decks-hub/${hit.objectID}`}
+      className="rounded-button border-border dark:border-border-dark hover:bg-interactive-bg-hover dark:hover:bg-interactive-bg-hover-dark flex flex-col gap-3 border p-4 transition-colors"
+    >
       <div className="min-w-0">
         <h3 className="text-content-primary dark:text-content-primary-dark text-lg font-semibold">
           {hit.title}
@@ -36,6 +40,6 @@ export function PublicDeckCard({ hit }: PublicDeckCardProps) {
           {dateFormatter.format(new Date(hit.publishedAt))}
         </span>
       </div>
-    </article>
+    </Link>
   )
 }
