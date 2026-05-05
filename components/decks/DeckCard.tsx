@@ -7,9 +7,16 @@ interface DeckCardProps {
   name: string
   description?: string
   showPublish?: boolean
+  variant?: 'created' | 'copied'
 }
 
-export function DeckCard({ id, name, description, showPublish }: DeckCardProps) {
+export function DeckCard({
+  id,
+  name,
+  description,
+  showPublish,
+  variant = 'created',
+}: DeckCardProps) {
   return (
     <Link
       href={`/decks/${id}`}
@@ -25,7 +32,12 @@ export function DeckCard({ id, name, description, showPublish }: DeckCardProps) 
           </p>
         )}
       </div>
-      <DeckCardMenu deckId={id} deckName={name} showPublish={showPublish} />
+      <DeckCardMenu
+        deckId={id}
+        deckName={name}
+        showPublish={showPublish}
+        variant={variant}
+      />
     </Link>
   )
 }

@@ -11,7 +11,12 @@ export async function indexPublicDeck(hit: PublicDeckHit) {
 
 export async function updatePublicDeck(
   deckId: string,
-  attrs: { title: string; description: string; updatedAt: number }
+  attrs: Partial<{
+    title: string
+    description: string
+    updatedAt: number
+    downloads: number
+  }>
 ) {
   await algolia.partialUpdateObject({
     indexName: PUBLIC_DECKS_INDEX,

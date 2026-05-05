@@ -3,9 +3,11 @@ import { Calendar, Download, RefreshCcw, Star, User } from 'lucide-react'
 import { BackButton } from '@/components/common/BackButton'
 import { SectionDivider } from '@/components/common/SectionDivider'
 
+import { CopyDeckButton } from './CopyDeckButton'
 import { PreviewFlashcard } from './PreviewFlashcard'
 
 interface PublicDeckPreviewProps {
+  deckId: string
   title: string
   description: string | null
   username: string
@@ -20,11 +22,14 @@ interface PublicDeckPreviewProps {
     backsideText: string
     hint: string | null
   }>
+  isCreator: boolean
+  isCopied: boolean
 }
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
 
 export function PublicDeckPreview({
+  deckId,
   title,
   description,
   username,
@@ -34,6 +39,8 @@ export function PublicDeckPreview({
   updatedAt,
   totalFlashcards,
   flashcards,
+  isCreator,
+  isCopied,
 }: PublicDeckPreviewProps) {
   const sampleCount = flashcards.length
   const hasMore = totalFlashcards > sampleCount
@@ -42,6 +49,11 @@ export function PublicDeckPreview({
     <div className="mx-auto max-w-3xl px-4 pb-12">
       <header className="bg-surface-primary dark:bg-surface-primary-dark top-header sticky z-10 flex items-center justify-between py-4 md:top-0">
         <BackButton />
+        <CopyDeckButton
+          deckId={deckId}
+          isCreator={isCreator}
+          isCopied={isCopied}
+        />
       </header>
 
       <section className="mt-2 space-y-3">

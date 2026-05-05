@@ -11,6 +11,12 @@ export {
   getUserPublishedDecks,
   publishDeck,
 } from './public-deck.service'
+export {
+  copyDeck,
+  getUserCopiedDecks,
+  uncopyDeck,
+} from './copied-deck.service'
+export { findUserDeck } from './copied-deck.repository'
 export { createDeckSchema, updateDeckSchema } from './deck.schemas'
 export type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
 export type {
