@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react'
 
 import { DeckSearchBar } from '@/components/decks/DeckSearchBar'
 import { DeckCard } from '@/components/decks/DeckCard'
+import { UnpublishedDeckCardMenu } from '@/components/decks/UnpublishedDeckCardMenu'
 import { getUserUnpublishedDecks } from '@/lib/decks'
 import { requireUserId } from '@/lib/auth/session'
 
@@ -35,7 +36,7 @@ export default async function YourDecksPage() {
               id={deck.id}
               name={deck.title}
               description={deck.description ?? undefined}
-              showPublish
+              menu={<UnpublishedDeckCardMenu deckId={deck.id} />}
             />
           ))}
         </div>

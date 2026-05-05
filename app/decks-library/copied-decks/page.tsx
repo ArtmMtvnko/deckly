@@ -1,4 +1,5 @@
 import { DeckCard } from '@/components/decks/DeckCard'
+import { CopiedDeckCardMenu } from '@/components/decks/CopiedDeckCardMenu'
 import { requireUserId } from '@/lib/auth/session'
 import { getUserCopiedDecks } from '@/lib/decks'
 
@@ -22,7 +23,7 @@ export default async function CopiedDecksPage() {
           id={deck.id}
           name={deck.title}
           description={deck.description ?? undefined}
-          variant="copied"
+          menu={<CopiedDeckCardMenu deckId={deck.id} />}
         />
       ))}
     </div>

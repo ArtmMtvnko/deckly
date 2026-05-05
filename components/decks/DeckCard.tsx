@@ -1,22 +1,14 @@
+import { ReactNode } from 'react'
 import Link from 'next/link'
-
-import { DeckCardMenu } from './DeckCardMenu'
 
 interface DeckCardProps {
   id: string
   name: string
   description?: string
-  showPublish?: boolean
-  variant?: 'created' | 'copied'
+  menu?: ReactNode
 }
 
-export function DeckCard({
-  id,
-  name,
-  description,
-  showPublish,
-  variant = 'created',
-}: DeckCardProps) {
+export function DeckCard({ id, name, description, menu }: DeckCardProps) {
   return (
     <Link
       href={`/decks/${id}`}
@@ -32,12 +24,7 @@ export function DeckCard({
           </p>
         )}
       </div>
-      <DeckCardMenu
-        deckId={id}
-        deckName={name}
-        showPublish={showPublish}
-        variant={variant}
-      />
+      {menu}
     </Link>
   )
 }
