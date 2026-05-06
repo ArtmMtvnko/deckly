@@ -3,23 +3,38 @@
 import { useState } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 
-import type { PublicDeckHit, SearchResult } from '@/lib/search'
+import type { PublicDeckHit, SearchResult, SortBy } from '@/lib/search'
 
+import { FilterRow } from './FilterRow'
 import { PublicDeckCard } from './PublicDeckCard'
 
 type Status = 'idle' | 'loading' | 'loaded' | 'error'
 
 const HITS_PER_PAGE = 12
 
-async function fetchPage(
-  q: string,
-  nextPage: number
-): Promise<SearchResult | null> {
+type FetchArgs = {
+  q: string
+  page: number
+  sortBy: SortBy
+  minRating: number
+  username: string
+}
+
+async function fetchPage({
+  q,
+  page,
+  sortBy,
+  minRating,
+  username,
+}: FetchArgs): Promise<SearchResult | null> {
   const params = new URLSearchParams({
     q,
-    page: String(nextPage),
+    page: String(page),
     hitsPerPage: String(HITS_PER_PAGE),
+    sortBy,
   })
+  if (minRating > 0) params.set('minRating', String(minRating))
+  if (username) params.set('username', username)
   const res = await fetch(`/api/decks-hub/search?${params.toString()}`)
   if (!res.ok) return null
   return res.json()
@@ -28,18 +43,23 @@ async function fetchPage(
 export function DecksHubSearch() {
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState<string | null>(null)
+  const [usernameInput, setUsernameInput] = useState('')
+  const [submittedUsername, setSubmittedUsername] = useState('')
+  const [sortBy, setSortBy] = useState<SortBy>('relevance')
+  const [minRating, setMinRating] = useState(0)
+  const [showFilters, setShowFilters] = useState(false)
   const [hits, setHits] = useState<PublicDeckHit[]>([])
   const [page, setPage] = useState(0)
   const [nbPages, setNbPages] = useState(0)
   const [status, setStatus] = useState<Status>('idle')
 
-  const handleSearch = async () => {
-    const q = query.trim()
+  const runSearch = async (args: Omit<FetchArgs, 'page'>) => {
     setStatus('loading')
-    setSubmittedQuery(q)
+    setSubmittedQuery(args.q)
+    setSubmittedUsername(args.username)
     setPage(0)
 
-    const data = await fetchPage(q, 0)
+    const data = await fetchPage({ ...args, page: 0 })
     if (!data) {
       setStatus('error')
       return
@@ -49,14 +69,67 @@ export function DecksHubSearch() {
     setStatus('loaded')
   }
 
+  const handleSearch = () => {
+    runSearch({
+      q: query.trim(),
+      sortBy,
+      minRating,
+      username: usernameInput.trim(),
+    })
+  }
+
   const handleLoadMore = async () => {
     if (submittedQuery === null) return
     const nextPage = page + 1
-    const data = await fetchPage(submittedQuery, nextPage)
+    const data = await fetchPage({
+      q: submittedQuery,
+      page: nextPage,
+      sortBy,
+      minRating,
+      username: submittedUsername,
+    })
     if (!data) return
     setHits((prev) => [...prev, ...data.hits])
     setPage(nextPage)
     setNbPages(data.nbPages)
+  }
+
+  const handleSortByChange = (value: SortBy) => {
+    setSortBy(value)
+    if (submittedQuery !== null) {
+      runSearch({
+        q: submittedQuery,
+        sortBy: value,
+        minRating,
+        username: submittedUsername,
+      })
+    }
+  }
+
+  const handleMinRatingChange = (value: number) => {
+    setMinRating(value)
+    if (submittedQuery !== null) {
+      runSearch({
+        q: submittedQuery,
+        sortBy,
+        minRating: value,
+        username: submittedUsername,
+      })
+    }
+  }
+
+  const handleClearFilters = () => {
+    setSortBy('relevance')
+    setMinRating(0)
+    setUsernameInput('')
+    if (submittedQuery !== null) {
+      runSearch({
+        q: submittedQuery,
+        sortBy: 'relevance',
+        minRating: 0,
+        username: '',
+      })
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,6 +140,8 @@ export function DecksHubSearch() {
   }
 
   const isInitial = submittedQuery === null
+  const hasActiveFilters =
+    sortBy !== 'relevance' || minRating > 0 || submittedUsername !== ''
 
   return (
     <div
@@ -112,12 +187,30 @@ export function DecksHubSearch() {
         <button
           type="button"
           aria-label="Filters"
-          onClick={() => {}}
-          className="rounded-button border-border text-content-secondary hover:bg-interactive-bg-hover dark:border-border-dark dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark size-icon-btn flex shrink-0 items-center justify-center border transition-colors"
+          aria-pressed={showFilters}
+          onClick={() => setShowFilters((v) => !v)}
+          className={
+            hasActiveFilters
+              ? 'rounded-button border-content-primary bg-content-primary text-surface-primary dark:border-content-primary-dark dark:bg-content-primary-dark dark:text-surface-primary-dark size-icon-btn flex shrink-0 items-center justify-center border transition-colors'
+              : 'rounded-button border-border text-content-secondary hover:bg-interactive-bg-hover dark:border-border-dark dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark size-icon-btn flex shrink-0 items-center justify-center border transition-colors'
+          }
         >
           <SlidersHorizontal className="size-icon" />
         </button>
       </div>
+
+      {showFilters && (
+        <FilterRow
+          sortBy={sortBy}
+          minRating={minRating}
+          username={usernameInput}
+          onSortByChange={handleSortByChange}
+          onMinRatingChange={handleMinRatingChange}
+          onUsernameChange={setUsernameInput}
+          onUsernameSubmit={handleSearch}
+          onClear={handleClearFilters}
+        />
+      )}
 
       {!isInitial && (
         <div className="mt-6">
@@ -135,7 +228,7 @@ export function DecksHubSearch() {
 
           {status === 'loaded' && hits.length === 0 && (
             <p className="text-content-secondary dark:text-content-secondary-dark py-8 text-center text-sm">
-              No decks match &ldquo;{submittedQuery}&rdquo;.
+              No decks match your filters.
             </p>
           )}
 

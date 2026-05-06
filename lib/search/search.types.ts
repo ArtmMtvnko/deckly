@@ -1,3 +1,5 @@
+import type { SortBy } from './search.schemas'
+
 export interface PublicDeckHit {
   objectID: string
   title: string
@@ -15,4 +17,13 @@ export interface SearchResult {
   page: number
   nbPages: number
   nbHits: number
+}
+
+export interface SearchPublicDecksParams {
+  query: string
+  page?: number
+  hitsPerPage?: number
+  sortBy?: SortBy
+  minRating?: number
+  username?: string
 }

@@ -9,4 +9,14 @@ if (!appId || !writeKey) {
 }
 
 export const PUBLIC_DECKS_INDEX = 'deckly_hub'
+
+// Replica indices for sorting by different attributes
+export const PUBLIC_DECKS_SORT_INDICES = {
+  relevance: PUBLIC_DECKS_INDEX,
+  rating: 'deckly_hub_rating_desc',
+  downloads: 'deckly_hub_downloads_desc',
+  publishedAt: 'deckly_hub_publishedAt_desc',
+  updatedAt: 'deckly_hub_updatedAt_desc',
+} as const
+
 export const algolia = algoliasearch(appId, writeKey)

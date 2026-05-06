@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
     query: searchParams.get('q') ?? '',
     page: searchParams.get('page') ?? 0,
     hitsPerPage: searchParams.get('hitsPerPage') ?? 12,
+    sortBy: searchParams.get('sortBy') ?? undefined,
+    minRating: searchParams.get('minRating') ?? undefined,
+    username: searchParams.get('username') ?? undefined,
   })
 
   if (!result.success) {
@@ -18,10 +21,6 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const data = await searchPublicDecks(
-    result.data.query,
-    result.data.page,
-    result.data.hitsPerPage
-  )
+  const data = await searchPublicDecks(result.data)
   return NextResponse.json(data)
 }
