@@ -1,7 +1,7 @@
 import { updatePublicDeck } from '@/lib/search'
 
 import {
-  createUserDeckAndIncrementDownloads,
+  createUserDeckAndRecordDownload,
   deleteUserDeckAndSrsStates,
   findCopiedDecksByUserId,
   findUserDeck,
@@ -26,9 +26,14 @@ export async function copyDeck(
   const existing = await findUserDeck(userId, deckId)
   if (existing) return { error: 'already-copied' }
 
-  const updated = await createUserDeckAndIncrementDownloads(userId, deckId)
+  const { publicDeck, incremented } = await createUserDeckAndRecordDownload(
+    userId,
+    deckId
+  )
 
-  await updatePublicDeck(deckId, { downloads: updated.downloads })
+  if (incremented) {
+    await updatePublicDeck(deckId, { downloads: publicDeck.downloads })
+  }
 
   return { ok: true }
 }

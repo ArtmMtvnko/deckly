@@ -16,6 +16,8 @@ export async function updatePublicDeck(
     description: string
     updatedAt: number
     downloads: number
+    rating: number | null
+    ratingsCount: number
   }>
 ) {
   await algolia.partialUpdateObject({

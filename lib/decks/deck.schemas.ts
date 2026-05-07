@@ -29,3 +29,9 @@ export const updateDeckSchema = z.object({
 })
 
 export type UpdateDeckInput = z.infer<typeof updateDeckSchema>
+
+export const rateDeckSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+})
+
+export type RateDeckInput = z.infer<typeof rateDeckSchema>

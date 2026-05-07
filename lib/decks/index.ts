@@ -17,8 +17,21 @@ export {
   uncopyDeck,
 } from './copied-deck.service'
 export { findUserDeck } from './copied-deck.repository'
-export { createDeckSchema, updateDeckSchema } from './deck.schemas'
-export type { CreateDeckInput, UpdateDeckInput } from './deck.schemas'
+export {
+  getUserRating,
+  rateDeck,
+  removeRating,
+} from './deck-rating.service'
+export {
+  createDeckSchema,
+  rateDeckSchema,
+  updateDeckSchema,
+} from './deck.schemas'
+export type {
+  CreateDeckInput,
+  RateDeckInput,
+  UpdateDeckInput,
+} from './deck.schemas'
 export type {
   DeckSummary,
   DeckWithFlashcards,

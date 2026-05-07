@@ -2,7 +2,11 @@ import { notFound } from 'next/navigation'
 
 import { PublicDeckPreview } from '@/components/decks-hub/PublicDeckPreview'
 import { requireUserId } from '@/lib/auth/session'
-import { findUserDeck, getPublicDeckPreview } from '@/lib/decks'
+import {
+  findUserDeck,
+  getPublicDeckPreview,
+  getUserRating,
+} from '@/lib/decks'
 
 interface PublicDeckPreviewPageProps {
   params: Promise<{ id: string }>
@@ -14,9 +18,10 @@ export default async function PublicDeckPreviewPage({
   const { id } = await params
   const userId = await requireUserId()
 
-  const [publicDeck, userDeck] = await Promise.all([
+  const [publicDeck, userDeck, userRating] = await Promise.all([
     getPublicDeckPreview(id),
     findUserDeck(userId, id),
+    getUserRating(id, userId),
   ])
 
   if (!publicDeck) notFound()
@@ -30,6 +35,8 @@ export default async function PublicDeckPreviewPage({
       description={deck.description}
       username={deck.creator.username}
       rating={publicDeck.rating}
+      ratingsCount={publicDeck.ratingsCount}
+      userRating={userRating}
       downloads={publicDeck.downloads}
       publishedAt={publicDeck.publishedAt}
       updatedAt={publicDeck.updatedAt}

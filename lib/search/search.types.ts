@@ -5,6 +5,7 @@ export interface PublicDeckHit {
   title: string
   description: string
   rating: number
+  ratingsCount: number
   downloads: number
   publishedAt: number
   updatedAt: number

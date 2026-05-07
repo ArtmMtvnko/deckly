@@ -1,9 +1,10 @@
-import { Calendar, Download, RefreshCcw, Star, User } from 'lucide-react'
+import { Calendar, Download, RefreshCcw, User } from 'lucide-react'
 
 import { BackButton } from '@/components/common/BackButton'
 import { SectionDivider } from '@/components/common/SectionDivider'
 
 import { CopyDeckButton } from './CopyDeckButton'
+import { DeckRating } from './DeckRating'
 import { PreviewFlashcard } from './PreviewFlashcard'
 
 interface PublicDeckPreviewProps {
@@ -12,6 +13,8 @@ interface PublicDeckPreviewProps {
   description: string | null
   username: string
   rating: number | null
+  ratingsCount: number
+  userRating: number | null
   downloads: number
   publishedAt: Date
   updatedAt: Date
@@ -26,7 +29,7 @@ interface PublicDeckPreviewProps {
   isCopied: boolean
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
+const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
 
 export function PublicDeckPreview({
   deckId,
@@ -34,6 +37,8 @@ export function PublicDeckPreview({
   description,
   username,
   rating,
+  ratingsCount,
+  userRating,
   downloads,
   publishedAt,
   updatedAt,
@@ -69,12 +74,6 @@ export function PublicDeckPreview({
 
       <section className="mt-5 flex flex-wrap gap-2">
         <Chip icon={<User className="size-icon-sm" />} label={`@${username}`} />
-        {rating !== null && (
-          <Chip
-            icon={<Star className="size-icon-sm" />}
-            label={rating.toFixed(1)}
-          />
-        )}
         <Chip
           icon={<Download className="size-icon-sm" />}
           label={`${downloads} ${downloads === 1 ? 'download' : 'downloads'}`}
@@ -86,6 +85,16 @@ export function PublicDeckPreview({
         <Chip
           icon={<RefreshCcw className="size-icon-sm" />}
           label={`Updated ${dateFormatter.format(updatedAt)}`}
+        />
+      </section>
+
+      <section className="mt-5">
+        <DeckRating
+          deckId={deckId}
+          averageRating={rating}
+          ratingsCount={ratingsCount}
+          userRating={userRating}
+          isCreator={isCreator}
         />
       </section>
 

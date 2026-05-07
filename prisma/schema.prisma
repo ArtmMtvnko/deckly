@@ -24,6 +24,8 @@ model User {
 
   createdDecks Deck[]
   decks        UserDeck[]
+  downloads    DeckDownload[]
+  ratings      DeckRating[]
   srsStates    SRSState[]
   accounts     Account[]
 }
@@ -54,8 +56,10 @@ model Deck {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
-  creator    User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator    User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   users      UserDeck[]
+  downloads  DeckDownload[]
+  ratings    DeckRating[]
   flashcards Flashcard[]
   publicDeck PublicDeck?
 }
@@ -72,13 +76,38 @@ model UserDeck {
 }
 
 model PublicDeck {
-  deckId      String   @id
-  rating      Float?
-  downloads   Int      @default(0)
-  publishedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  deckId       String   @id
+  rating       Float?
+  ratingsCount Int      @default(0)
+  downloads    Int      @default(0)
+  publishedAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+}
+
+model DeckDownload {
+  userId       String
+  deckId       String
+  downloadedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@id([userId, deckId])
+}
+
+model DeckRating {
+  userId    String
+  deckId    String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@id([userId, deckId])
 }
 
 model Flashcard {

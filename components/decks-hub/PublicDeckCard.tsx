@@ -7,7 +7,7 @@ interface PublicDeckCardProps {
   hit: PublicDeckHit
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
+const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
 
 export function PublicDeckCard({ hit }: PublicDeckCardProps) {
   return (

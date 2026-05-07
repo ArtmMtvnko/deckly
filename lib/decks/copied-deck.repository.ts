@@ -24,16 +24,30 @@ export async function findCopiedDecksByUserId(userId: string) {
   })
 }
 
-export async function createUserDeckAndIncrementDownloads(
+export async function createUserDeckAndRecordDownload(
   userId: string,
   deckId: string
 ) {
   return prisma.$transaction(async (tx) => {
     await tx.userDeck.create({ data: { userId, deckId } })
-    return tx.publicDeck.update({
+
+    const existingDownload = await tx.deckDownload.findUnique({
+      where: { userId_deckId: { userId, deckId } },
+    })
+
+    if (existingDownload) {
+      const publicDeck = await tx.publicDeck.findUniqueOrThrow({
+        where: { deckId },
+      })
+      return { publicDeck, incremented: false as const }
+    }
+
+    await tx.deckDownload.create({ data: { userId, deckId } })
+    const publicDeck = await tx.publicDeck.update({
       where: { deckId },
       data: { downloads: { increment: 1 } },
     })
+    return { publicDeck, incremented: true as const }
   })
 }
 
