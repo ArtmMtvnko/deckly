@@ -6,7 +6,7 @@ import { Star, X } from 'lucide-react'
 
 interface DeckRatingProps {
   deckId: string
-  averageRating: number | null
+  averageRating: number
   ratingsCount: number
   userRating: number | null
   isCreator: boolean
@@ -26,14 +26,14 @@ export function DeckRating({
   const summary =
     ratingsCount === 0
       ? 'No ratings yet'
-      : `${(averageRating ?? 0).toFixed(1)} (${ratingsCount} ${
+      : `${averageRating.toFixed(1)} (${ratingsCount} ${
           ratingsCount === 1 ? 'rating' : 'ratings'
         })`
 
   if (isCreator) {
     return (
       <div className="flex items-center gap-2">
-        <ReadOnlyStars value={averageRating ?? 0} />
+        <ReadOnlyStars value={averageRating} />
         <span className="text-content-secondary dark:text-content-secondary-dark text-sm">
           {summary}
         </span>

@@ -12,7 +12,7 @@ interface PublicDeckPreviewProps {
   title: string
   description: string | null
   username: string
-  rating: number | null
+  rating: number
   ratingsCount: number
   userRating: number | null
   downloads: number

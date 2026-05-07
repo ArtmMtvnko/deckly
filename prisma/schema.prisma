@@ -77,7 +77,7 @@ model UserDeck {
 
 model PublicDeck {
   deckId       String   @id
-  rating       Float?
+  rating       Float    @default(0)
   ratingsCount Int      @default(0)
   downloads    Int      @default(0)
   publishedAt  DateTime @default(now())

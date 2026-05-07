@@ -20,7 +20,7 @@ export async function rateDeck(
   userId: string,
   rating: number
 ): Promise<
-  | { ok: true; rating: number | null; ratingsCount: number }
+  | { ok: true; rating: number; ratingsCount: number }
   | { error: RateDeckError }
 > {
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
@@ -49,7 +49,7 @@ export async function removeRating(
   deckId: string,
   userId: string
 ): Promise<
-  | { ok: true; rating: number | null; ratingsCount: number }
+  | { ok: true; rating: number; ratingsCount: number }
   | { error: RemoveRatingError }
 > {
   const deck = await findPublishableDeck(deckId)

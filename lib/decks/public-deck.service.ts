@@ -29,7 +29,7 @@ export async function publishDeck(deckId: string, userId: string) {
     objectID: deckId,
     title: deck.title,
     description: deck.description ?? '',
-    rating: publicDeck.rating ?? 0,
+    rating: publicDeck.rating,
     ratingsCount: publicDeck.ratingsCount,
     downloads: publicDeck.downloads,
     publishedAt: publicDeck.publishedAt.getTime(),

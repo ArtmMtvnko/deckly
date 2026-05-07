@@ -47,7 +47,7 @@ async function recomputePublicDeckRating(
   return tx.publicDeck.update({
     where: { deckId },
     data: {
-      rating: aggregate._avg.rating,
+      rating: aggregate._avg.rating ?? 0,
       ratingsCount: aggregate._count._all,
     },
   })
