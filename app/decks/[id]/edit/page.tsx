@@ -26,6 +26,8 @@ export default async function EditDeckPage({ params }: EditDeckPageProps) {
           frontsideText: fc.frontsideText,
           backsideText: fc.backsideText,
           hint: fc.hint,
+          frontsideImage: fc.frontsideImage,
+          backsideImage: fc.backsideImage,
         })),
       }}
     />

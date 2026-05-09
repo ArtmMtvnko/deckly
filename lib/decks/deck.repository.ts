@@ -22,6 +22,8 @@ export async function createDeckWithFlashcards(
           frontsideText: fc.frontsideText,
           backsideText: fc.backsideText,
           hint: fc.hint,
+          frontsideImage: fc.frontsideImage,
+          backsideImage: fc.backsideImage,
         })),
       },
     },
@@ -71,7 +73,9 @@ export async function updateDeckWithFlashcards(
           data: {
             frontsideText: fc.frontsideText,
             backsideText: fc.backsideText,
-            hint: fc.hint ?? null,
+            hint: fc.hint,
+            frontsideImage: fc.frontsideImage,
+            backsideImage: fc.backsideImage,
           },
         })
       } else {
@@ -80,7 +84,9 @@ export async function updateDeckWithFlashcards(
             deckId,
             frontsideText: fc.frontsideText,
             backsideText: fc.backsideText,
-            hint: fc.hint ?? null,
+            hint: fc.hint,
+            frontsideImage: fc.frontsideImage,
+            backsideImage: fc.backsideImage,
           },
         })
       }

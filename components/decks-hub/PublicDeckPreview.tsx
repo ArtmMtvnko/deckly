@@ -24,6 +24,8 @@ interface PublicDeckPreviewProps {
     frontsideText: string
     backsideText: string
     hint: string | null
+    frontsideImage: string | null
+    backsideImage: string | null
   }>
   isCreator: boolean
   isCopied: boolean
@@ -119,6 +121,8 @@ export function PublicDeckPreview({
                 frontsideText={fc.frontsideText}
                 backsideText={fc.backsideText}
                 hint={fc.hint}
+                frontsideImage={fc.frontsideImage}
+                backsideImage={fc.backsideImage}
               />
             ))}
           </div>

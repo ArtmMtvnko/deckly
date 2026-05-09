@@ -1,5 +1,10 @@
-import { memo } from 'react'
-import { Sparkles, Trash2 } from 'lucide-react'
+'use client'
+
+import Image from 'next/image'
+import { memo, useState } from 'react'
+import { ImageIcon, Sparkles, Trash2, X } from 'lucide-react'
+
+import { UnsplashPicker } from '@/components/decks/UnsplashPicker'
 
 interface FlashcardEditorProps {
   id: string
@@ -7,9 +12,13 @@ interface FlashcardEditorProps {
   frontsideText: string
   backsideText: string
   hint: string
+  frontsideImage: string | null
+  backsideImage: string | null
   onFrontsideChange: (id: string, value: string) => void
   onBacksideChange: (id: string, value: string) => void
   onHintChange: (id: string, value: string) => void
+  onFrontsideImageChange: (id: string, value: string | null) => void
+  onBacksideImageChange: (id: string, value: string | null) => void
   onDelete: (id: string) => void
   onGenerateAI: (id: string) => void
 }
@@ -20,9 +29,13 @@ export const FlashcardEditor = memo(function FlashcardEditor({
   frontsideText,
   backsideText,
   hint,
+  frontsideImage,
+  backsideImage,
   onFrontsideChange,
   onBacksideChange,
   onHintChange,
+  onFrontsideImageChange,
+  onBacksideImageChange,
   onDelete,
   onGenerateAI,
 }: FlashcardEditorProps) {
@@ -51,9 +64,12 @@ export const FlashcardEditor = memo(function FlashcardEditor({
         <SideField
           id={`front-${index}`}
           label="Front"
+          sideLabel="front"
           value={frontsideText}
           placeholder="Front side text"
+          imageUrl={frontsideImage}
           onChange={(v) => onFrontsideChange(id, v)}
+          onImageChange={(v) => onFrontsideImageChange(id, v)}
         />
 
         <div className="border-border dark:border-border-dark self-stretch border-l" />
@@ -61,9 +77,12 @@ export const FlashcardEditor = memo(function FlashcardEditor({
         <SideField
           id={`back-${index}`}
           label="Back"
+          sideLabel="back"
           value={backsideText}
           placeholder="Back side text"
+          imageUrl={backsideImage}
           onChange={(v) => onBacksideChange(id, v)}
+          onImageChange={(v) => onBacksideImageChange(id, v)}
         />
       </div>
 
@@ -88,23 +107,31 @@ export const FlashcardEditor = memo(function FlashcardEditor({
   )
 })
 
-/* ── Private sub-component ─────────────────────────────── */
+/* ── Private sub-components ────────────────────────────── */
 
 interface SideFieldProps {
   id: string
   label: string
+  sideLabel: string
   value: string
   placeholder: string
+  imageUrl: string | null
   onChange: (value: string) => void
+  onImageChange: (value: string | null) => void
 }
 
 function SideField({
   id,
   label,
+  sideLabel,
   value,
   placeholder,
+  imageUrl,
   onChange,
+  onImageChange,
 }: SideFieldProps) {
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
+
   return (
     <div className="flex-1">
       <label
@@ -113,14 +140,75 @@ function SideField({
       >
         {label}
       </label>
+
+      <ImageSlot
+        imageUrl={imageUrl}
+        onOpenPicker={() => setIsPickerOpen(true)}
+        onClear={() => onImageChange(null)}
+      />
+
       <textarea
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button w-full resize-none border bg-transparent p-2 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
+        className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button mt-2 w-full resize-none border bg-transparent p-2 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
+      />
+
+      <UnsplashPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        onSelect={onImageChange}
+        sideLabel={sideLabel}
       />
     </div>
+  )
+}
+
+interface ImageSlotProps {
+  imageUrl: string | null
+  onOpenPicker: () => void
+  onClear: () => void
+}
+
+function ImageSlot({ imageUrl, onOpenPicker, onClear }: ImageSlotProps) {
+  if (imageUrl) {
+    return (
+      <div className="rounded-button border-border dark:border-border-dark relative aspect-video w-full overflow-hidden border">
+        <Image
+          src={imageUrl}
+          alt=""
+          fill
+          sizes="(max-width: 768px) 50vw, 350px"
+          className="object-cover"
+        />
+        <button
+          type="button"
+          onClick={onClear}
+          aria-label="Remove image"
+          className="absolute top-1 right-1 cursor-pointer rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
+        >
+          <X className="size-icon" />
+        </button>
+        <button
+          type="button"
+          onClick={onOpenPicker}
+          className="absolute inset-0 cursor-pointer"
+          aria-label="Change image"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onOpenPicker}
+      className="rounded-button border-border dark:border-border-dark text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-1 border border-dashed transition-colors"
+    >
+      <ImageIcon className="size-icon" />
+      <span className="text-xs">Add image</span>
+    </button>
   )
 }

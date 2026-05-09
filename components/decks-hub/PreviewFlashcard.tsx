@@ -1,10 +1,13 @@
 import { Lightbulb } from 'lucide-react'
+import Image from 'next/image'
 
 interface PreviewFlashcardProps {
   index: number
   frontsideText: string
   backsideText: string
   hint: string | null
+  frontsideImage: string | null
+  backsideImage: string | null
 }
 
 export function PreviewFlashcard({
@@ -12,6 +15,8 @@ export function PreviewFlashcard({
   frontsideText,
   backsideText,
   hint,
+  frontsideImage,
+  backsideImage,
 }: PreviewFlashcardProps) {
   return (
     <div className="rounded-button border-border dark:border-border-dark relative border p-4 pt-8">
@@ -20,9 +25,9 @@ export function PreviewFlashcard({
       </span>
 
       <div className="flex gap-4">
-        <Side label="Front" text={frontsideText} />
+        <Side label="Front" text={frontsideText} imageUrl={frontsideImage} />
         <div className="border-border dark:border-border-dark self-stretch border-l" />
-        <Side label="Back" text={backsideText} />
+        <Side label="Back" text={backsideText} imageUrl={backsideImage} />
       </div>
 
       {hint && (
@@ -38,14 +43,26 @@ export function PreviewFlashcard({
 interface SideProps {
   label: string
   text: string
+  imageUrl: string | null
 }
 
-function Side({ label, text }: SideProps) {
+function Side({ label, text, imageUrl }: SideProps) {
   return (
     <div className="flex-1">
       <div className="text-content-secondary dark:text-content-secondary-dark mb-1 text-xs font-medium">
         {label}
       </div>
+      {imageUrl && (
+        <div className="rounded-button relative mb-2 aspect-video w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 50vw, 350px"
+            className="object-cover"
+          />
+        </div>
+      )}
       <p className="text-content-primary dark:text-content-primary-dark text-sm whitespace-pre-wrap">
         {text}
       </p>

@@ -17,6 +17,8 @@ interface FlashcardDraft {
   frontsideText: string
   backsideText: string
   hint: string
+  frontsideImage: string | null
+  backsideImage: string | null
 }
 
 interface InitialDeck {
@@ -28,6 +30,8 @@ interface InitialDeck {
     frontsideText: string
     backsideText: string
     hint: string | null
+    frontsideImage: string | null
+    backsideImage: string | null
   }>
 }
 
@@ -41,6 +45,8 @@ function createEmptyFlashcard(): FlashcardDraft {
     frontsideText: '',
     backsideText: '',
     hint: '',
+    frontsideImage: null,
+    backsideImage: null,
   }
 }
 
@@ -51,6 +57,8 @@ function flashcardsFromInitial(initial: InitialDeck): FlashcardDraft[] {
     frontsideText: fc.frontsideText,
     backsideText: fc.backsideText,
     hint: fc.hint ?? '',
+    frontsideImage: fc.frontsideImage,
+    backsideImage: fc.backsideImage,
   }))
 }
 
@@ -92,6 +100,24 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
     )
   }, [])
 
+  const updateFrontsideImage = useCallback(
+    (id: string, value: string | null) => {
+      setFlashcards((prev) =>
+        prev.map((fc) => (fc.id === id ? { ...fc, frontsideImage: value } : fc))
+      )
+    },
+    []
+  )
+
+  const updateBacksideImage = useCallback(
+    (id: string, value: string | null) => {
+      setFlashcards((prev) =>
+        prev.map((fc) => (fc.id === id ? { ...fc, backsideImage: value } : fc))
+      )
+    },
+    []
+  )
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const generateAI = useCallback((_id: string) => {
     // TODO: AI generation
@@ -122,6 +148,8 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
           frontsideText: fc.frontsideText,
           backsideText: fc.backsideText,
           hint: fc.hint ?? '',
+          frontsideImage: null,
+          backsideImage: null,
         }))
 
         setFlashcards((prev) => [...generated, ...prev])
@@ -141,7 +169,9 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
 
   const handleSave = useCallback(async () => {
     const filledFlashcards = flashcards.filter(
-      (fc) => fc.frontsideText.trim() || fc.backsideText.trim()
+      (fc) =>
+        (fc.frontsideText.trim() || fc.frontsideImage) &&
+        (fc.backsideText.trim() || fc.backsideImage)
     )
 
     if (!title.trim()) {
@@ -165,6 +195,8 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
           frontsideText: fc.frontsideText.trim(),
           backsideText: fc.backsideText.trim(),
           hint: fc.hint.trim() || undefined,
+          frontsideImage: fc.frontsideImage ?? undefined,
+          backsideImage: fc.backsideImage ?? undefined,
         })),
       }
 
@@ -184,7 +216,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
       }
 
       toast.success(`Deck ${isEditing ? 'updated' : 'created'} successfully!`)
-      router.push('/decks-library/your-decks')
+      router.back()
     } catch {
       toast.error('Network error. Please check your connection and try again.')
     } finally {
@@ -247,9 +279,13 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
             frontsideText={fc.frontsideText}
             backsideText={fc.backsideText}
             hint={fc.hint}
+            frontsideImage={fc.frontsideImage}
+            backsideImage={fc.backsideImage}
             onFrontsideChange={updateFrontside}
             onBacksideChange={updateBackside}
             onHintChange={updateHint}
+            onFrontsideImageChange={updateFrontsideImage}
+            onBacksideImageChange={updateBacksideImage}
             onDelete={deleteFlashcard}
             onGenerateAI={generateAI}
           />

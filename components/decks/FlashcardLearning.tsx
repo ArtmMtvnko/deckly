@@ -201,10 +201,9 @@ export function FlashcardLearning({ deck }: FlashcardLearningProps) {
             {card.frontsideImage && (
               <Image
                 src={card.frontsideImage}
-                alt=""
+                alt="Frontside image"
                 width={256}
                 height={128}
-                unoptimized
                 className="mb-4 max-h-32 rounded-lg object-contain"
               />
             )}
@@ -250,10 +249,9 @@ export function FlashcardLearning({ deck }: FlashcardLearningProps) {
             {card.backsideImage && (
               <Image
                 src={card.backsideImage}
-                alt=""
+                alt="Backside image"
                 width={256}
                 height={128}
-                unoptimized
                 className="mb-4 max-h-32 rounded-lg object-contain"
               />
             )}

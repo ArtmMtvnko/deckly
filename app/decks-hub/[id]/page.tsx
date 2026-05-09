@@ -46,6 +46,8 @@ export default async function PublicDeckPreviewPage({
         frontsideText: fc.frontsideText,
         backsideText: fc.backsideText,
         hint: fc.hint,
+        frontsideImage: fc.frontsideImage,
+        backsideImage: fc.backsideImage,
       }))}
       isCreator={userId === deck.creatorId}
       isCopied={userDeck !== null}

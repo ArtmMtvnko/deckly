@@ -1,10 +1,30 @@
 import { z } from 'zod/v4'
 
-const flashcardSchema = z.object({
-  frontsideText: z.string().min(1, 'Front side text is required'),
-  backsideText: z.string().min(1, 'Back side text is required'),
+const flashcardBaseSchema = z.object({
+  frontsideText: z.string(),
+  backsideText: z.string(),
   hint: z.string().max(500).optional(),
+  frontsideImage: z.url().optional(),
+  backsideImage: z.url().optional(),
 })
+
+type FlashcardBase = z.infer<typeof flashcardBaseSchema>
+
+function hasContent(fc: FlashcardBase): boolean {
+  return Boolean(
+    (fc.frontsideText.trim() || fc.frontsideImage) &&
+    (fc.backsideText.trim() || fc.backsideImage)
+  )
+}
+
+const cardContentMessage = {
+  message: 'Each flashcard must have text or an image',
+}
+
+const flashcardSchema = flashcardBaseSchema.refine(
+  hasContent,
+  cardContentMessage
+)
 
 export const createDeckSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
@@ -16,9 +36,9 @@ export const createDeckSchema = z.object({
 
 export type CreateDeckInput = z.infer<typeof createDeckSchema>
 
-const updateFlashcardSchema = flashcardSchema.extend({
-  id: z.uuid().optional(),
-})
+const updateFlashcardSchema = flashcardBaseSchema
+  .extend({ id: z.uuid().optional() })
+  .refine(hasContent, cardContentMessage)
 
 export const updateDeckSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
