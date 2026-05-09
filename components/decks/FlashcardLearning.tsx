@@ -197,19 +197,26 @@ export function FlashcardLearning({ deck }: FlashcardLearningProps) {
           )}
         >
           {/* Front face */}
-          <div className="border-border dark:border-border-dark bg-surface-primary dark:bg-surface-primary-dark absolute inset-0 flex flex-col items-center justify-center rounded-2xl border p-6 backface-hidden">
-            {card.frontsideImage && (
-              <Image
-                src={card.frontsideImage}
-                alt="Frontside image"
-                width={256}
-                height={128}
-                className="mb-4 max-h-32 rounded-lg object-contain"
-              />
+          <div className="border-border dark:border-border-dark bg-surface-primary dark:bg-surface-primary-dark absolute inset-0 flex flex-col rounded-2xl border p-6 backface-hidden">
+            {card.frontsideImage ? (
+              <>
+                <FlashcardFaceImage
+                  src={card.frontsideImage}
+                  alt="Frontside image"
+                />
+                <div className="min-h-0 overflow-y-auto">
+                  <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
+                    {card.frontsideText}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-1 items-center justify-center overflow-y-auto">
+                <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
+                  {card.frontsideText}
+                </p>
+              </div>
             )}
-            <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
-              {card.frontsideText}
-            </p>
 
             {card.hint && (
               <div className="absolute right-4 bottom-4">
@@ -240,24 +247,31 @@ export function FlashcardLearning({ deck }: FlashcardLearningProps) {
           {/* Back face */}
           <div
             className={twMerge(
-              'border-border dark:border-border-dark bg-surface-primary dark:bg-surface-primary-dark absolute inset-0 flex flex-col items-center justify-center rounded-2xl border p-6 backface-hidden',
+              'border-border dark:border-border-dark bg-surface-primary dark:bg-surface-primary-dark absolute inset-0 flex flex-col rounded-2xl border p-6 backface-hidden',
               isMobile
                 ? 'transform-[rotateY(180deg)]'
                 : 'transform-[rotateX(180deg)]'
             )}
           >
-            {card.backsideImage && (
-              <Image
-                src={card.backsideImage}
-                alt="Backside image"
-                width={256}
-                height={128}
-                className="mb-4 max-h-32 rounded-lg object-contain"
-              />
+            {card.backsideImage ? (
+              <>
+                <FlashcardFaceImage
+                  src={card.backsideImage}
+                  alt="Backside image"
+                />
+                <div className="min-h-0 overflow-y-auto">
+                  <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
+                    {card.backsideText}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-1 items-center justify-center overflow-y-auto">
+                <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
+                  {card.backsideText}
+                </p>
+              </div>
             )}
-            <p className="text-content-primary dark:text-content-primary-dark text-center text-lg font-medium">
-              {card.backsideText}
-            </p>
           </div>
         </div>
       </div>
@@ -279,6 +293,20 @@ export function FlashcardLearning({ deck }: FlashcardLearningProps) {
           </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+function FlashcardFaceImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative mb-4 min-h-20 w-full flex-1">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 640px) 100vw, 600px"
+        className="rounded-lg object-contain"
+      />
     </div>
   )
 }
