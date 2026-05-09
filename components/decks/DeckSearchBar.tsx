@@ -1,17 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { Ref } from 'react'
 import { Search } from 'lucide-react'
 
-export function DeckSearchBar() {
-  const [query, setQuery] = useState('')
+interface DeckSearchBarProps {
+  value: string
+  onChange: (value: string) => void
+  inputRef?: Ref<HTMLInputElement>
+}
 
+export function DeckSearchBar({ value, onChange, inputRef }: DeckSearchBarProps) {
   return (
-    <div className="relative flex-1">
+    <div className="relative">
       <input
+        ref={inputRef}
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder="Search decks..."
         className="rounded-button border-border bg-surface-primary text-content-primary placeholder:text-content-secondary focus:ring-content-primary dark:border-border-dark dark:bg-surface-primary-dark dark:text-content-primary-dark dark:placeholder:text-content-secondary-dark dark:focus:ring-content-primary-dark w-full border py-2 pr-10 pl-4 text-sm focus:ring-2 focus:outline-none"
       />
