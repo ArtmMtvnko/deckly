@@ -1,17 +1,22 @@
 import { FilterableDeckList } from '@/components/decks/FilterableDeckList'
 import { CopiedDeckCardMenu } from '@/components/decks/CopiedDeckCardMenu'
 import { requireUserId } from '@/lib/auth/session'
-import { getUserCopiedDecks } from '@/lib/decks'
+import { getPinnedDeckIdSet, getUserCopiedDecks } from '@/lib/decks'
 
 export default async function CopiedDecksPage() {
   const userId = await requireUserId()
-  const copies = await getUserCopiedDecks(userId)
+  const [copies, pinnedIds] = await Promise.all([
+    getUserCopiedDecks(userId),
+    getPinnedDeckIdSet(userId),
+  ])
 
   const items = copies.map(({ deck }) => ({
     id: deck.id,
     title: deck.title,
     description: deck.description ?? undefined,
-    menu: <CopiedDeckCardMenu deckId={deck.id} />,
+    menu: (
+      <CopiedDeckCardMenu deckId={deck.id} isPinned={pinnedIds.has(deck.id)} />
+    ),
   }))
 
   return (

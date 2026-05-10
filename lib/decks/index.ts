@@ -18,6 +18,12 @@ export {
 } from './copied-deck.service'
 export { findUserDeck } from './copied-deck.repository'
 export {
+  getPinnedDecksForSidebar,
+  getPinnedDeckIdSet,
+  pinDeck,
+  unpinDeck,
+} from './pinned-deck.service'
+export {
   getUserRating,
   rateDeck,
   removeRating,

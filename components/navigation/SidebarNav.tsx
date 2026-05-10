@@ -2,16 +2,15 @@
 
 import { useSidebarStore } from '@/lib/stores/sidebarStore'
 import { useMobileStore } from '@/lib/stores/mobileStore'
-import {
-  mainNavItems,
-  decksNavItem,
-  newDeckItem,
-  mockDecks,
-} from '@/lib/navigation'
+import { mainNavItems, decksNavItem, type DeckItem } from '@/lib/navigation'
 import { NavItem } from '@/components/common/NavItem'
 import { DeckNavItem } from '@/components/common/DeckNavItem'
 
-export function SidebarNav() {
+interface SidebarNavProps {
+  pinnedDecks: DeckItem[]
+}
+
+export function SidebarNav({ pinnedDecks }: SidebarNavProps) {
   const { isExpanded, setExpanded } = useSidebarStore()
   const isMobile = useMobileStore((state) => state.isMobile)
 
@@ -49,10 +48,10 @@ export function SidebarNav() {
           onClick={handleNavClick}
         />
 
-        {/* Individual decks */}
-        {isShowingLabels && (
+        {/* Pinned decks */}
+        {isShowingLabels && pinnedDecks.length > 0 && (
           <div className="mt-1 space-y-1">
-            {mockDecks.map((deck) => (
+            {pinnedDecks.map((deck) => (
               <DeckNavItem
                 key={deck.id}
                 href={deck.href}
@@ -63,17 +62,6 @@ export function SidebarNav() {
             ))}
           </div>
         )}
-
-        {/* New deck button */}
-        <div className="mt-1">
-          <NavItem
-            href={newDeckItem.href}
-            label={newDeckItem.label}
-            icon={newDeckItem.icon}
-            isExpanded={isShowingLabels}
-            onClick={handleNavClick}
-          />
-        </div>
       </div>
     </nav>
   )

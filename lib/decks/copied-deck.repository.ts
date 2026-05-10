@@ -59,6 +59,9 @@ export async function deleteUserDeckAndSrsStates(
     await tx.sRSState.deleteMany({
       where: { userId, flashcard: { deckId } },
     })
+    await tx.pinnedDeck.deleteMany({
+      where: { userId, deckId },
+    })
     await tx.userDeck.delete({
       where: { userId_deckId: { userId, deckId } },
     })
