@@ -28,6 +28,8 @@ export {
   rateDeck,
   removeRating,
 } from './deck-rating.service'
+export { getOverviewData } from './overview.service'
+export type { OverviewData, OverviewDeck } from './overview.service'
 export {
   createDeckSchema,
   rateDeckSchema,
