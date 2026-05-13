@@ -13,6 +13,7 @@ export const generatedFlashcardSchema = z.object({
   frontsideText: z.string().min(1),
   backsideText: z.string().min(1),
   hint: z.string().optional(),
+  imageSearchQuery: z.string().optional(),
   frontsideImageUrl: z.url().nullish(),
   backsideImageUrl: z.url().nullish(),
 })

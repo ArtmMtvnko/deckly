@@ -24,29 +24,54 @@ const INSTRUCTIONS_BY_TYPE: Record<FlashcardType, string> = {
     'Front = concise question or term. Back = concise answer or definition. Hint = optional short cue.',
 }
 
-const flashcardsResponseSchema = {
-  type: Type.ARRAY,
-  minItems: 3,
-  maxItems: 3,
-  items: {
-    type: Type.OBJECT,
-    properties: {
-      frontsideText: {
-        type: Type.STRING,
-        description: 'Concise question or term shown on the front of the card.',
-      },
-      backsideText: {
-        type: Type.STRING,
-        description: 'Concise answer or definition shown on the back.',
-      },
-      hint: {
-        type: Type.STRING,
-        description: 'Optional short cue to help recall the answer.',
-      },
-    },
-    propertyOrdering: ['frontsideText', 'backsideText', 'hint'],
-    required: ['frontsideText', 'backsideText'],
+const cardItemProperties = {
+  frontsideText: {
+    type: Type.STRING,
+    description: 'Concise question or term shown on the front of the card.',
   },
+  backsideText: {
+    type: Type.STRING,
+    description: 'Concise answer or definition shown on the back.',
+  },
+  hint: {
+    type: Type.STRING,
+    description: 'Optional short cue to help recall the answer.',
+  },
+  imageSearchQuery: {
+    type: Type.STRING,
+    description:
+      'Short 1-3 word concrete English noun phrase suitable for an Unsplash photo search representing this card.',
+  },
+}
+
+function buildFlashcardsResponseSchema(includeImageQuery: boolean) {
+  const properties = includeImageQuery
+    ? cardItemProperties
+    : {
+        frontsideText: cardItemProperties.frontsideText,
+        backsideText: cardItemProperties.backsideText,
+        hint: cardItemProperties.hint,
+      }
+
+  const required = includeImageQuery
+    ? ['frontsideText', 'backsideText', 'imageSearchQuery']
+    : ['frontsideText', 'backsideText']
+
+  const propertyOrdering = includeImageQuery
+    ? ['frontsideText', 'backsideText', 'hint', 'imageSearchQuery']
+    : ['frontsideText', 'backsideText', 'hint']
+
+  return {
+    type: Type.ARRAY,
+    minItems: 3,
+    maxItems: 3,
+    items: {
+      type: Type.OBJECT,
+      properties,
+      propertyOrdering,
+      required,
+    },
+  }
 }
 
 const classifyResponseSchema = {
@@ -91,20 +116,26 @@ async function classifyPrompt(prompt: string): Promise<FlashcardType> {
 
 async function generateCards(
   prompt: string,
-  type: FlashcardType
+  type: FlashcardType,
+  wantsImages: boolean
 ): Promise<GeneratedFlashcard[]> {
   const instruction = [
     'Generate exactly 3 flashcards on the topic described by the user.',
     INSTRUCTIONS_BY_TYPE[type],
+    wantsImages
+      ? 'Also include an imageSearchQuery for each card: a short 1-3 word concrete English noun phrase suitable for finding a representative photo on Unsplash. Prefer tangible objects or scenes over abstract terms.'
+      : null,
     `Topic: ${prompt}`,
-  ].join('\n')
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   const response = await gemini.models.generateContent({
     model: MODEL,
     contents: instruction,
     config: {
       responseMimeType: 'application/json',
-      responseJsonSchema: flashcardsResponseSchema,
+      responseJsonSchema: buildFlashcardsResponseSchema(wantsImages),
     },
   })
 
@@ -134,7 +165,8 @@ async function attachImages(
 
   return Promise.all(
     cards.map(async (card) => {
-      const query = useBackside ? card.backsideText : card.frontsideText
+      const fallback = useBackside ? card.backsideText : card.frontsideText
+      const query = card.imageSearchQuery?.trim() || fallback
       const imageUrl = await findImageUrl(query)
 
       return useBackside
@@ -147,10 +179,11 @@ async function attachImages(
 export async function generateFlashcards(
   prompt: string
 ): Promise<GeneratedFlashcard[]> {
+  const wantsImages = IMAGE_INTENT_RE.test(prompt)
   const type = await classifyPrompt(prompt)
-  const cards = await generateCards(prompt, type)
+  const cards = await generateCards(prompt, type, wantsImages)
 
-  if (!IMAGE_INTENT_RE.test(prompt)) {
+  if (!wantsImages) {
     return cards
   }
 
