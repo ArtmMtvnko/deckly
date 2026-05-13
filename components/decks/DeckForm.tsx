@@ -148,8 +148,8 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
           frontsideText: fc.frontsideText,
           backsideText: fc.backsideText,
           hint: fc.hint ?? '',
-          frontsideImage: null,
-          backsideImage: null,
+          frontsideImage: fc.frontsideImageUrl ?? null,
+          backsideImage: fc.backsideImageUrl ?? null,
         }))
 
         setFlashcards((prev) => [...generated, ...prev])
