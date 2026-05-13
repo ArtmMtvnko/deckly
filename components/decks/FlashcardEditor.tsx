@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { memo, useState } from 'react'
-import { ImageIcon, Sparkles, Trash2, X } from 'lucide-react'
+import { memo, useCallback, useState } from 'react'
+import { ArrowUp, ImageIcon, Loader2, Sparkles, Trash2, X } from 'lucide-react'
 
 import { UnsplashPicker } from '@/components/decks/UnsplashPicker'
 
@@ -14,13 +14,14 @@ interface FlashcardEditorProps {
   hint: string
   frontsideImage: string | null
   backsideImage: string | null
+  isGenerating: boolean
   onFrontsideChange: (id: string, value: string) => void
   onBacksideChange: (id: string, value: string) => void
   onHintChange: (id: string, value: string) => void
   onFrontsideImageChange: (id: string, value: string | null) => void
   onBacksideImageChange: (id: string, value: string | null) => void
   onDelete: (id: string) => void
-  onGenerateAI: (id: string) => void
+  onGenerateAI: (id: string, instruction: string) => Promise<boolean>
 }
 
 export const FlashcardEditor = memo(function FlashcardEditor({
@@ -31,6 +32,7 @@ export const FlashcardEditor = memo(function FlashcardEditor({
   hint,
   frontsideImage,
   backsideImage,
+  isGenerating,
   onFrontsideChange,
   onBacksideChange,
   onHintChange,
@@ -39,25 +41,87 @@ export const FlashcardEditor = memo(function FlashcardEditor({
   onDelete,
   onGenerateAI,
 }: FlashcardEditorProps) {
+  const [isAIMode, setIsAIMode] = useState(false)
+  const [prompt, setPrompt] = useState('')
+
+  const exitAIMode = useCallback(() => {
+    setPrompt('')
+    setIsAIMode(false)
+  }, [])
+
+  const handleSend = useCallback(async () => {
+    const trimmed = prompt.trim()
+    if (!trimmed || isGenerating) return
+    const ok = await onGenerateAI(id, trimmed)
+    if (ok) exitAIMode()
+  }, [prompt, isGenerating, onGenerateAI, id, exitAIMode])
+
   return (
-    <div className="rounded-button border-border dark:border-border-dark relative border p-4 pt-8">
-      {/* Actions */}
-      <div className="absolute top-2 right-2 flex gap-1">
-        <button
-          type="button"
-          onClick={() => onGenerateAI(id)}
-          className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors"
-        >
-          <Sparkles className="size-icon" />
-        </button>
-        <button
-          type="button"
-          onClick={() => onDelete(id)}
-          className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors hover:text-red-500 dark:hover:text-red-400"
-        >
-          <Trash2 className="size-icon" />
-        </button>
-      </div>
+    <div className="rounded-button border-border dark:border-border-dark relative border p-4">
+      {/* Top action row */}
+      {isAIMode ? (
+        <div className="mb-3 flex items-center gap-2">
+          <input
+            type="text"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                handleSend()
+              } else if (e.key === 'Escape') {
+                e.preventDefault()
+                exitAIMode()
+              }
+            }}
+            placeholder="Describe how to change this card..."
+            autoFocus
+            disabled={isGenerating}
+            className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button h-8 w-full flex-1 border bg-transparent px-3 text-sm transition-colors outline-none focus:border-neutral-400 disabled:opacity-50 dark:focus:border-neutral-600"
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={isGenerating || !prompt.trim()}
+            aria-label="Send AI edit"
+            className="rounded-button flex h-8 w-8 cursor-pointer items-center justify-center bg-black text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          >
+            {isGenerating ? (
+              <Loader2 className="size-icon animate-spin" />
+            ) : (
+              <ArrowUp className="size-icon" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={exitAIMode}
+            disabled={isGenerating}
+            aria-label="Cancel AI edit"
+            className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark flex h-8 w-8 cursor-pointer items-center justify-center transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <X className="size-icon" />
+          </button>
+        </div>
+      ) : (
+        <div className="mb-3 flex justify-end gap-1">
+          <button
+            type="button"
+            onClick={() => setIsAIMode(true)}
+            aria-label="Edit with AI"
+            className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors"
+          >
+            <Sparkles className="size-icon" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(id)}
+            aria-label="Delete flashcard"
+            className="rounded-button text-content-secondary hover:bg-interactive-bg-hover dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark cursor-pointer p-1.5 transition-colors hover:text-red-500 dark:hover:text-red-400"
+          >
+            <Trash2 className="size-icon" />
+          </button>
+        </div>
+      )}
 
       {/* Front / Back sides */}
       <div className="flex gap-4">

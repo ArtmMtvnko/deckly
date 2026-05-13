@@ -4,7 +4,10 @@ import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import type { GeneratedFlashcard } from '@/lib/ai/ai.schemas'
+import type {
+  EditedFlashcard,
+  GeneratedFlashcard,
+} from '@/lib/ai/ai.schemas'
 
 import { SectionDivider } from '@/components/common/SectionDivider'
 import { FlashcardEditor } from '@/components/decks/FlashcardEditor'
@@ -73,6 +76,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatingIds, setGeneratingIds] = useState<Set<string>>(() => new Set())
 
   const addFlashcard = useCallback(() => {
     setFlashcards((prev) => [createEmptyFlashcard(), ...prev])
@@ -118,10 +122,59 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
     []
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const generateAI = useCallback((_id: string) => {
-    // TODO: AI generation
-  }, [])
+  const generateAI = useCallback(
+    async (id: string, instruction: string): Promise<boolean> => {
+      const card = flashcards.find((fc) => fc.id === id)
+      if (!card) return false
+
+      setGeneratingIds((prev) => {
+        const next = new Set(prev)
+        next.add(id)
+        return next
+      })
+
+      try {
+        const response = await fetch('/api/ai/flashcard-edit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            instruction,
+            card: {
+              frontsideText: card.frontsideText,
+              backsideText: card.backsideText,
+              hint: card.hint,
+            },
+          }),
+        })
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          toast.error(data.error ?? 'Failed to edit flashcard.')
+          return false
+        }
+
+        const data: { flashcard: EditedFlashcard } = await response.json()
+
+        updateFrontside(id, data.flashcard.frontsideText)
+        updateBackside(id, data.flashcard.backsideText)
+        updateHint(id, data.flashcard.hint)
+        toast.success('Flashcard updated')
+        return true
+      } catch {
+        toast.error(
+          'Network error. Please check your connection and try again.'
+        )
+        return false
+      } finally {
+        setGeneratingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+      }
+    },
+    [flashcards, updateFrontside, updateBackside, updateHint]
+  )
 
   const handleGenerateAIBatch = useCallback(
     async (prompt: string): Promise<boolean> => {
@@ -281,6 +334,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
             hint={fc.hint}
             frontsideImage={fc.frontsideImage}
             backsideImage={fc.backsideImage}
+            isGenerating={generatingIds.has(fc.id)}
             onFrontsideChange={updateFrontside}
             onBacksideChange={updateBackside}
             onHintChange={updateHint}
