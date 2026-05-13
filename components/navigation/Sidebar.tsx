@@ -1,5 +1,5 @@
 import { getPinnedDecksForSidebar } from '@/lib/decks'
-import { requireUserId } from '@/lib/auth/session'
+import { auth } from '@/auth'
 import type { DeckItem } from '@/lib/navigation'
 
 import { MobileHeader } from './MobileHeader'
@@ -9,7 +9,11 @@ import { SidebarNav } from './SidebarNav'
 import { UserSection } from './UserSection'
 
 export async function Sidebar() {
-  const userId = await requireUserId()
+  const session = await auth()
+  const userId = session?.user?.id
+
+  if (!userId) return null
+
   const pinnedDecks: DeckItem[] = await getPinnedDecksForSidebar(userId)
 
   return (
