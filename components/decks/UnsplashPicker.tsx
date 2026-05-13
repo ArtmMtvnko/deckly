@@ -1,8 +1,8 @@
 'use client'
 
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Modal } from '@/components/common/Modal'
@@ -32,6 +32,12 @@ export function UnsplashPicker({
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<UnsplashImage[]>([])
   const [status, setStatus] = useState<Status>('idle')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleReset() {
+    setQuery('')
+    inputRef.current?.focus()
+  }
 
   async function handleSearch() {
     const trimmed = query.trim()
@@ -69,6 +75,7 @@ export function UnsplashPicker({
     >
       <div className="flex gap-2">
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -82,6 +89,15 @@ export function UnsplashPicker({
           className="border-border dark:border-border-dark text-content-primary dark:text-content-primary-dark rounded-button flex-1 border bg-transparent px-3 py-2 text-sm transition-colors outline-none focus:border-neutral-400 dark:focus:border-neutral-600"
           autoFocus
         />
+        <button
+          type="button"
+          onClick={handleReset}
+          disabled={query === ''}
+          aria-label="Clear search"
+          className="rounded-button border-border text-content-secondary hover:bg-interactive-bg-hover dark:border-border-dark dark:text-content-secondary-dark dark:hover:bg-interactive-bg-hover-dark flex h-9.5 w-9.5 shrink-0 items-center justify-center border transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <X className="size-icon" aria-hidden />
+        </button>
         <button
           type="button"
           onClick={handleSearch}
