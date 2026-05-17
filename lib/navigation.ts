@@ -27,6 +27,6 @@ export const mainNavItems: NavItem[] = [
 
 export const decksNavItem: NavItem = {
   label: 'Decks',
-  href: '/decks-library',
+  href: '/decks-library/your-decks',
   icon: Layers,
 }
