@@ -29,7 +29,7 @@ export async function searchPublicDecks(
   }
 }
 
-function buildFilters({
+export function buildFilters({
   minRating,
   username,
 }: SearchPublicDecksParams): string | undefined {

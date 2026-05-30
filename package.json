@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "prisma:studio": "pnpm exec prisma studio",
     "typecheck": "pnpm exec tsc --noEmit"
   },
@@ -37,6 +40,7 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "prettier": "^3.8.1",
@@ -44,6 +48,7 @@
     "prisma": "^7.4.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }
