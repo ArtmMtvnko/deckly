@@ -54,6 +54,7 @@ export function SidebarNav({ pinnedDecks }: SidebarNavProps) {
             {pinnedDecks.map((deck) => (
               <DeckNavItem
                 key={deck.id}
+                id={deck.id}
                 href={deck.href}
                 label={deck.label}
                 isExpanded={isShowingLabels}

@@ -270,6 +270,7 @@ export function DeckForm({ initialDeck }: DeckFormProps) {
 
       toast.success(`Deck ${isEditing ? 'updated' : 'created'} successfully!`)
       router.back()
+      router.refresh()
     } catch {
       toast.error('Network error. Please check your connection and try again.')
     } finally {

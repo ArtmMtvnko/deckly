@@ -251,7 +251,7 @@ function ImageSlot({ imageUrl, onOpenPicker, onClear }: ImageSlotProps) {
           type="button"
           onClick={onClear}
           aria-label="Remove image"
-          className="absolute top-1 right-1 cursor-pointer rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
+          className="absolute top-1 right-1 z-10 cursor-pointer rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
         >
           <X className="size-icon" />
         </button>

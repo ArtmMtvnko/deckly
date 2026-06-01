@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Globe, Pencil, Pin, PinOff, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { DeckCardMenuShell } from './DeckCardMenuShell'
 
@@ -37,10 +38,19 @@ export function UnpublishedDeckCardMenu({
       })
       if (!res.ok) {
         console.error('Failed to publish deck', await res.text())
+        toast.error('Failed to publish deck')
         return
+      }
+      const data = await res.json().catch(() => ({}))
+      if (data.alreadyPublished) {
+        toast.info('Deck is already published')
+      } else {
+        toast.success('Deck published!')
       }
       close()
       router.refresh()
+    } catch {
+      toast.error('Network error. Please try again.')
     } finally {
       setPublishing(false)
     }

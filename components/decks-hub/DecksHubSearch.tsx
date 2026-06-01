@@ -46,7 +46,9 @@ export function DecksHubSearch() {
   const [usernameInput, setUsernameInput] = useState('')
   const [submittedUsername, setSubmittedUsername] = useState('')
   const [sortBy, setSortBy] = useState<SortBy>('relevance')
+  const [submittedSortBy, setSubmittedSortBy] = useState<SortBy>('relevance')
   const [minRating, setMinRating] = useState(0)
+  const [submittedMinRating, setSubmittedMinRating] = useState(0)
   const [showFilters, setShowFilters] = useState(false)
   const [hits, setHits] = useState<PublicDeckHit[]>([])
   const [page, setPage] = useState(0)
@@ -57,6 +59,8 @@ export function DecksHubSearch() {
     setStatus('loading')
     setSubmittedQuery(args.q)
     setSubmittedUsername(args.username)
+    setSubmittedSortBy(args.sortBy)
+    setSubmittedMinRating(args.minRating)
     setPage(0)
 
     const data = await fetchPage({ ...args, page: 0 })
@@ -84,8 +88,8 @@ export function DecksHubSearch() {
     const data = await fetchPage({
       q: submittedQuery,
       page: nextPage,
-      sortBy,
-      minRating,
+      sortBy: submittedSortBy,
+      minRating: submittedMinRating,
       username: submittedUsername,
     })
     if (!data) return
@@ -96,40 +100,16 @@ export function DecksHubSearch() {
 
   const handleSortByChange = (value: SortBy) => {
     setSortBy(value)
-    if (submittedQuery !== null) {
-      runSearch({
-        q: submittedQuery,
-        sortBy: value,
-        minRating,
-        username: submittedUsername,
-      })
-    }
   }
 
   const handleMinRatingChange = (value: number) => {
     setMinRating(value)
-    if (submittedQuery !== null) {
-      runSearch({
-        q: submittedQuery,
-        sortBy,
-        minRating: value,
-        username: submittedUsername,
-      })
-    }
   }
 
   const handleClearFilters = () => {
     setSortBy('relevance')
     setMinRating(0)
     setUsernameInput('')
-    if (submittedQuery !== null) {
-      runSearch({
-        q: submittedQuery,
-        sortBy: 'relevance',
-        minRating: 0,
-        username: '',
-      })
-    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

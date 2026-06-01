@@ -34,7 +34,7 @@ export async function createDeckWithFlashcards(
 export async function findDeckWithFlashcards(deckId: string) {
   return prisma.deck.findUnique({
     where: { id: deckId },
-    include: { flashcards: { orderBy: { createdAt: 'asc' } } },
+    include: { flashcards: { orderBy: { createdAt: 'desc' } } },
   })
 }
 
