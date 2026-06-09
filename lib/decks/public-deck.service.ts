@@ -1,7 +1,8 @@
-import { indexPublicDeck } from '@/lib/search'
+import { deindexPublicDeck, indexPublicDeck } from '@/lib/search'
 
 import {
   createPublicDeck,
+  deletePublicDeckCascade,
   findPublicDeckPreview,
   findPublishableDeck,
   findPublishedDecksByCreatorId,
@@ -39,4 +40,18 @@ export async function publishDeck(deckId: string, userId: string) {
   })
 
   return { id: deckId, alreadyPublished: false as const }
+}
+
+export async function unpublishDeck(deckId: string, userId: string) {
+  const deck = await findPublishableDeck(deckId)
+  if (!deck || deck.creatorId !== userId) return null
+
+  if (!deck.publicDeck) {
+    return { id: deckId, alreadyUnpublished: true as const }
+  }
+
+  await deletePublicDeckCascade(deckId)
+  await deindexPublicDeck(deckId)
+
+  return { id: deckId, alreadyUnpublished: false as const }
 }

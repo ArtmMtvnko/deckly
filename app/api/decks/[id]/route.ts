@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { requireUserId } from '@/lib/auth/session'
-import { updateDeck, updateDeckSchema } from '@/lib/decks'
+import { deleteDeck, updateDeck, updateDeckSchema } from '@/lib/decks'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -26,4 +26,16 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   }
 
   return NextResponse.json({ id: updated.id })
+}
+
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  const userId = await requireUserId()
+  const { id } = await params
+
+  const deleted = await deleteDeck(id, userId)
+  if (!deleted) {
+    return NextResponse.json({ error: 'Deck not found' }, { status: 404 })
+  }
+
+  return NextResponse.json({ id: deleted.id })
 }

@@ -9,6 +9,13 @@ export async function indexPublicDeck(hit: PublicDeckHit) {
   })
 }
 
+export async function deindexPublicDeck(deckId: string) {
+  await algolia.deleteObject({
+    indexName: PUBLIC_DECKS_INDEX,
+    objectID: deckId,
+  })
+}
+
 export async function updatePublicDeck(
   deckId: string,
   attrs: Partial<{

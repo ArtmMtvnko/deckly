@@ -1,11 +1,15 @@
-import { updatePublicDeck } from '@/lib/search'
+import { deindexPublicDeck, updatePublicDeck } from '@/lib/search'
 import { calculateSm2 } from '@/lib/srs/sm2'
 import { QUALITY_MAP } from '@/lib/srs/srs.types'
 import type { AnswerRating } from '@/lib/srs/srs.types'
 
-import { findPublicDeckById } from './public-deck.repository'
+import {
+  findPublicDeckById,
+  findPublishableDeck,
+} from './public-deck.repository'
 import {
   createDeckWithFlashcards,
+  deleteDeckById,
   findUnpublishedDecksByCreatorId,
   findDeckForLearning,
   findDeckWithFlashcards,
@@ -51,6 +55,18 @@ export async function updateDeck(
   }
 
   return result
+}
+
+export async function deleteDeck(deckId: string, userId: string) {
+  const deck = await findPublishableDeck(deckId)
+  if (!deck || deck.creatorId !== userId) return null
+
+  await deleteDeckById(deckId)
+  if (deck.publicDeck) {
+    await deindexPublicDeck(deckId)
+  }
+
+  return { id: deckId }
 }
 
 export async function getDeckForLearning(deckId: string, userId: string) {

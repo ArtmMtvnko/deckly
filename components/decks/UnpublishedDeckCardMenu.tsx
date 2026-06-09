@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Globe, Pencil, Pin, PinOff, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
+
 import { DeckCardMenuShell } from './DeckCardMenuShell'
 
 interface UnpublishedDeckCardMenuProps {
@@ -19,6 +21,8 @@ export function UnpublishedDeckCardMenu({
   const router = useRouter()
   const [publishing, setPublishing] = useState(false)
   const [pinning, setPinning] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   function handleEdit(event: React.MouseEvent, close: () => void) {
     event.preventDefault()
@@ -80,57 +84,91 @@ export function UnpublishedDeckCardMenu({
     event.preventDefault()
     event.stopPropagation()
     close()
-    // TODO: Implement delete for created decks
+    setConfirmOpen(true)
+  }
+
+  async function confirmDelete() {
+    if (deleting) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/decks/${deckId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        console.error('Failed to delete deck', await res.text())
+        toast.error('Failed to delete deck')
+        return
+      }
+      toast.success('Deck deleted')
+      setConfirmOpen(false)
+      router.refresh()
+    } catch {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   return (
-    <DeckCardMenuShell>
-      {(close) => (
-        <>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={(e) => handleEdit(e, close)}
-            className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-blue-500 dark:hover:text-blue-400"
-          >
-            <Pencil className="size-icon-sm" />
-            Edit
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={(e) => handlePinToggle(e, close)}
-            disabled={pinning}
-            className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-pink-400"
-          >
-            {isPinned ? (
-              <PinOff className="size-icon-sm" />
-            ) : (
-              <Pin className="size-icon-sm" />
-            )}
-            {isPinned ? 'Unpin from sidebar' : 'Pin to sidebar'}
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={(e) => handlePublish(e, close)}
-            disabled={publishing}
-            className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-green-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-green-400"
-          >
-            <Globe className="size-icon-sm" />
-            {publishing ? 'Publishing…' : 'Publish'}
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={(e) => handleDelete(e, close)}
-            className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-red-500 dark:hover:text-red-400"
-          >
-            <Trash2 className="size-icon-sm" />
-            Delete
-          </button>
-        </>
-      )}
-    </DeckCardMenuShell>
+    <>
+      <DeckCardMenuShell>
+        {(close) => (
+          <>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => handleEdit(e, close)}
+              className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-blue-500 dark:hover:text-blue-400"
+            >
+              <Pencil className="size-icon-sm" />
+              Edit
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => handlePinToggle(e, close)}
+              disabled={pinning}
+              className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-pink-400"
+            >
+              {isPinned ? (
+                <PinOff className="size-icon-sm" />
+              ) : (
+                <Pin className="size-icon-sm" />
+              )}
+              {isPinned ? 'Unpin from sidebar' : 'Pin to sidebar'}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => handlePublish(e, close)}
+              disabled={publishing}
+              className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-green-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-green-400"
+            >
+              <Globe className="size-icon-sm" />
+              {publishing ? 'Publishing…' : 'Publish'}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => handleDelete(e, close)}
+              className="text-content-primary hover:bg-interactive-bg-hover dark:text-content-primary-dark dark:hover:bg-interactive-bg-hover-dark flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:text-red-500 dark:hover:text-red-400"
+            >
+              <Trash2 className="size-icon-sm" />
+              Delete
+            </button>
+          </>
+        )}
+      </DeckCardMenuShell>
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => {
+          if (!deleting) setConfirmOpen(false)
+        }}
+        onConfirm={confirmDelete}
+        title="Delete deck"
+        description="This permanently deletes the deck and all its flashcards. This can't be undone."
+        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+        loading={deleting}
+        variant="danger"
+      />
+    </>
   )
 }

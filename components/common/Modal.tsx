@@ -2,6 +2,7 @@
 
 import { X } from 'lucide-react'
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 interface ModalProps {
   isOpen: boolean
@@ -30,7 +31,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
@@ -54,6 +55,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         </header>
         <div className="flex-1 overflow-auto p-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

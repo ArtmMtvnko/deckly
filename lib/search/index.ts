@@ -1,5 +1,9 @@
 export { searchPublicDecks } from './search.service'
-export { indexPublicDeck, updatePublicDeck } from './publish.service'
+export {
+  indexPublicDeck,
+  deindexPublicDeck,
+  updatePublicDeck,
+} from './publish.service'
 export { searchParamsSchema, sortBySchema } from './search.schemas'
 export type { SearchParamsInput, SortBy } from './search.schemas'
 export type { PublicDeckHit, SearchResult } from './search.types'

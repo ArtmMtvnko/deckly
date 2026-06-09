@@ -1,5 +1,6 @@
 export {
   createDeck,
+  deleteDeck,
   getDeckForEditing,
   getDeckForLearning,
   getUserUnpublishedDecks,
@@ -10,6 +11,7 @@ export {
   getPublicDeckPreview,
   getUserPublishedDecks,
   publishDeck,
+  unpublishDeck,
 } from './public-deck.service'
 export {
   copyDeck,

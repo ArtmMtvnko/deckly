@@ -31,6 +31,10 @@ export async function createDeckWithFlashcards(
   })
 }
 
+export async function deleteDeckById(deckId: string) {
+  return prisma.deck.delete({ where: { id: deckId } })
+}
+
 export async function findDeckWithFlashcards(deckId: string) {
   return prisma.deck.findUnique({
     where: { id: deckId },

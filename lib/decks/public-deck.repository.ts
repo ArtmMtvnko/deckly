@@ -24,6 +24,14 @@ export async function createPublicDeck(deckId: string) {
   })
 }
 
+export async function deletePublicDeckCascade(deckId: string) {
+  return prisma.$transaction([
+    prisma.deckRating.deleteMany({ where: { deckId } }),
+    prisma.deckDownload.deleteMany({ where: { deckId } }),
+    prisma.publicDeck.deleteMany({ where: { deckId } }),
+  ])
+}
+
 export async function findPublicDeckById(deckId: string) {
   return prisma.publicDeck.findUnique({ where: { deckId } })
 }
