@@ -55,7 +55,7 @@ export function DeckNavItem({
           'h-icon-btn rounded-button flex items-center overflow-hidden transition-all',
           isActive
             ? 'bg-interactive-bg-active text-interactive-text-active dark:bg-interactive-bg-active-dark dark:text-interactive-text-active-dark'
-            : 'text-interactive-text hover:bg-interactive-bg-hover hover:text-interactive-text-hover dark:text-interactive-text-dark dark:hover:bg-interactive-bg-hover-dark dark:hover:text-interactive-text-hover-dark'
+            : 'text-interactive-text group-hover:bg-interactive-bg-hover group-hover:text-interactive-text-hover dark:text-interactive-text-dark dark:group-hover:bg-interactive-bg-hover-dark dark:group-hover:text-interactive-text-hover-dark'
         )}
       >
         <div className="size-icon-btn flex shrink-0 items-center justify-center">
